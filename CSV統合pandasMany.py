@@ -20,54 +20,52 @@ import os
 import pandas as pd
 from icecream import ic
 import re
+import sys
 
 # Out[23]: ['33', '4', '5', '6', '7', '1']
 
 # 初期ディレクトリ取得
 
-
-def Dialog_Folder(rootpath_init="C:/Users/anonymous/Dropbox"):
+def Dialog_File(rootpath=r"C:", caption="choise"):
     """
-
+    choose folder path by Explore
 
     Args:
-        rootpath_init (TYPE, optional): DESCRIPTION. Defaults to "C:/Users/anonymous/Dropbox".
+        rootpath (str, optional): initial path of Explore. Defaults to r"C:".
+        caption (str, optional): title of Explore. Defaults to "choise".
 
     Returns:
-        folderpath (TYPE): DESCRIPTION.
+        folderpath (str): folder path.
 
     """
+    from PyQt5 import QtWidgets
+    # 実行ディレクトリ取得D
+    # ディレクトリ選択ダイアログを表示-
+    filepath = QtWidgets.QFileDialog.getOpenFileName(
+        parent=None, caption=caption, directory=rootpath)
 
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    import sys
+    # sys.exit(app_dialog_file.exec_())
+    return filepath[0]
+
+
+def Dialog_Folder(rootpath=r"C:", caption="choise"):
+    """
+    choose file path by Explore
+
+    Args:
+        rootpath (str, optional): initial path of Explore. Defaults to r"C:".
+        caption (str, optional): title of Explore. Defaults to "choise".
+
+    Returns:
+        filepath (str): file path.
+
+    """
+    from PyQt5 import QtWidgets
     # ディレクトリ選択ダイアログを表示
-    rootpath = rootpath_init
-    app = QtWidgets.QApplication(sys.argv)
     folderpath = QtWidgets.QFileDialog.getExistingDirectory(
-        None, r"rootpath", rootpath)
-    print(folderpath)
+        parent=None, caption=caption, directory=rootpath)
     return folderpath
 
-
-def Dialog_File(rootpath_init="C:/Users/anonymous/Dropbox"):
-    """
-    Args:
-        rootpath_init (str, optional): initial_directory_path. Defaults to r"C:/Users/anonymous/Dropbox".
-
-    Returns:
-        filepath (str): filepath you chose
-
-    """
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    import sys
-    # 実行ディレクトリ取得D
-    rootpath = rootpath_init
-    app = QtWidgets.QApplication(sys.argv)
-    # ディレクトリ選択ダイアログを表示
-    filepath = QtWidgets.QFileDialog.getOpenFileName(
-        None, r"rootpath", rootpath)
-    print(filepath)
-    return filepath
 
 def OSAcsvlam_In(filepath):  # lam-IのOSA信号(35行目から)をよむ
     # wholedata = pd.read_csv(filepath, header=None, skiprows=34).values
@@ -98,17 +96,20 @@ https://techacademy.jp/magazine/22296
 """
 
 regex_No = re.compile("^\d+\d+\d+\d+\d+\d")
-list_No = [regex_No.findall(filenames[i])[0] for i in range(filelen)]
+list_No = [ int(regex_No.findall(filenames[i])[0]) for i in range(filelen)]
 
 regex_subNo = re.compile("-+\w+_")
-list_subNo = [regex_subNo.findall(filenames[i])[0][1:-1] for i in range(filelen)]
+list_subNo = [ int(regex_subNo.findall(filenames[i])[0][1:-1]) for i in range(filelen)]
 
 regex_title = re.compile("_\w+@")
 list_title = [regex_title.findall(filenames[i])[0][1:-1] for i in range(filelen)]
 
-sortlist = [filenames, filepaths, list_title, list_No]
+regex_posi = re.compile("@"+".+"+"pls")
+list_posi = [int(regex_posi.findall(filenames[i])[0][1:-3]) for i in range(filelen)]
 
-df_sortframe = pd.DataFrame(sortlist, index=['NAME', "PATH", "TITLE", "No"])
+sortlist = [filenames, list_title, list_No, list_subNo, list_posi]
+
+df_sortframe = pd.DataFrame(sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
 
 
 df_sortframe.columns = [i for i in range(filelen)]  # colums番号を直す
@@ -117,13 +118,13 @@ df_sortframe.columns = [i for i in range(filelen)]  # colums番号を直す
 # =============================================================================
 # df_sortframeの順番に従い実際にcsvファイルの情報を取り込んだdf_wholedataを創る
 # =============================================================================
-df_index_freq = OSAcsvlam_In(df_sortframe.at["PATH", 0])[0]
-df_intensity000001 = OSAcsvlam_In(df_sortframe.at["PATH", 0])[1]
+df_index_freq = OSAcsvlam_In(filepaths[0])[0]
+df_intensity000001 = OSAcsvlam_In(filepaths[0])[1]
 df_intensities = df_intensity000001
 
 
 for i in range(filelen-1):
-    df_data_i = OSAcsvlam_In(df_sortframe.at["PATH", i+1])
+    df_data_i = OSAcsvlam_In(filepaths[i+1])
     df_intensities = pd.concat([df_intensities, df_data_i[1]], axis=1)
 
 
@@ -134,9 +135,9 @@ df_wholedata.columns = df_sortframe.loc["NAME"].values.tolist()
 
 
 # =============================================================================
-# １つのＸＬＳＸフォルダにdf_wholedata, dfsortframe _sortedを保存する．df.sortframe_sortedは幾何光路差計算のときにファイル名を渡すために使用する
+# １つのＸＬＳＸフォルダにdf_wholedata, dfsortframe _sortedを保存する．
 # =============================================================================
-XLSXpath = os.path.join(folderpath, "CSV_matome.xlsx")
+XLSXpath = os.path.join( os.path.dirname(folderpath), "CSV_matome.xlsx")
 writer = pd.ExcelWriter(XLSXpath, engine="xlsxwriter",)
 df_wholedata.to_excel(writer, sheet_name="wholedata",)
 df_sortframe.to_excel(writer, sheet_name="sort",)
