@@ -78,7 +78,7 @@ https://niwakomablog.com/python-number-extract/#:~:text=%E4%BD%BF%E3%81%84%E6%96
 
 
 # =============================================================================
-# まとめる対象のフォルダを選択し，ファイル名より情報をソートしたdf_sortframe_sortedを創る
+# まとめる対象のフォルダを選択し，ファイル名より情報をソートしたdf_sort_sortedを創る
 # =============================================================================
 folderpath = Dialog_Folder()
 
@@ -109,13 +109,13 @@ list_posi = [int(regex_posi.findall(filenames[i])[0][1:-3]) for i in range(filel
 
 sortlist = [filenames, list_title, list_No, list_subNo, list_posi]
 
-df_sortframe = pd.DataFrame(sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
+df_sort = pd.DataFrame(sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
 
 
-df_sortframe.columns = df_sortframe.loc["NAME"].values.tolist()
+df_sort.columns = df_sort.loc["NAME"].values.tolist()
 
 # =============================================================================
-# df_sortframeの順番に従い実際にcsvファイルの情報を取り込んだdf_wholedataを創る
+# df_sortの順番に従い実際にcsvファイルの情報を取り込んだdf_wholedataを創る
 # =============================================================================
 df_index_freq = OSAcsvlam_In(filepaths[0])[0]
 df_intensity000001 = OSAcsvlam_In(filepaths[0])[1]
@@ -130,7 +130,7 @@ for i in range(filelen-1):
 df_wholedata = pd.concat([df_index_freq, df_intensities], axis=1)
 df_wholedata.loc[28:] = df_wholedata.loc[28:].astype(float)
 df_wholedata = df_wholedata.set_index(0)
-df_wholedata.columns = df_sortframe.loc["NAME"].values.tolist()
+df_wholedata.columns = df_sort.loc["NAME"].values.tolist()
 
 
 # =============================================================================
@@ -140,9 +140,9 @@ XLSXpath = os.path.join( os.path.dirname(folderpath), "CSV_matome.xlsx")
 
 with pd.ExcelWriter(XLSXpath, engine="xlsxwriter",) as writer:
     df_wholedata.to_excel(writer, sheet_name="wholedata",)
-    df_sortframe.to_excel(writer, sheet_name="sort",)
+    df_sort.to_excel(writer, sheet_name="sort",)
 
 
 """
-# df_sortframe_sorted = df_sortframe.sort_values(by=["TITLE", "No", ], axis=1)
+# df_sort_sorted = df_sort.sort_values(by=["TITLE", "No", ], axis=1)
 """
