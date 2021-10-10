@@ -112,8 +112,7 @@ sortlist = [filenames, list_title, list_No, list_subNo, list_posi]
 df_sortframe = pd.DataFrame(sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
 
 
-df_sortframe.columns = [i for i in range(filelen)]  # colums番号を直す
-
+df_sortframe.columns = df_sortframe.loc["NAME"].values.tolist()
 
 # =============================================================================
 # df_sortframeの順番に従い実際にcsvファイルの情報を取り込んだdf_wholedataを創る
@@ -138,11 +137,10 @@ df_wholedata.columns = df_sortframe.loc["NAME"].values.tolist()
 # １つのＸＬＳＸフォルダにdf_wholedata, dfsortframe _sortedを保存する．
 # =============================================================================
 XLSXpath = os.path.join( os.path.dirname(folderpath), "CSV_matome.xlsx")
-writer = pd.ExcelWriter(XLSXpath, engine="xlsxwriter",)
-df_wholedata.to_excel(writer, sheet_name="wholedata",)
-df_sortframe.to_excel(writer, sheet_name="sort",)
-writer.save()
-writer.close()
+
+with pd.ExcelWriter(XLSXpath, engine="xlsxwriter",) as writer:
+    df_wholedata.to_excel(writer, sheet_name="wholedata",)
+    df_sortframe.to_excel(writer, sheet_name="sort",)
 
 
 """
