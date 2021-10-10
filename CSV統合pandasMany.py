@@ -41,6 +41,7 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
     from PyQt5 import QtWidgets
     # 実行ディレクトリ取得D
     # ディレクトリ選択ダイアログを表示-
+    app_dialog_file = QtWidgets.QApplication(sys.argv)
     filepath = QtWidgets.QFileDialog.getOpenFileName(
         parent=None, caption=caption, directory=rootpath)
 
@@ -138,7 +139,7 @@ df_wholedata.columns = df_sort.loc["NAME"].values.tolist()
 # =============================================================================
 XLSXpath = os.path.join( os.path.dirname(folderpath), "CSV_matome.xlsx")
 
-with pd.ExcelWriter(XLSXpath, engine="xlsxwriter",) as writer:
+with pd.ExcelWriter(XLSXpath,) as writer:
     df_wholedata.to_excel(writer, sheet_name="wholedata",)
     df_sort.to_excel(writer, sheet_name="sort",)
 
