@@ -18,11 +18,11 @@ from icecream import ic
 # import copy
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
-
+import ref_index
 # expnum=16
 # cutT =10e-12
 # cutwidth=1e-12
-
+n_air=ref_index.edlen(wave = (1554.134049+1563.862587)/2 ,t=27, p =101325, rh=70)
 
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
@@ -197,7 +197,7 @@ class AbsoluteDistance():
 
         # https://biotech-lab.org/articles/4907 R2値
         R2 = metrics.r2_score(phi, a * F + b)
-        n_air = 1
+
         path_diff = 299792458/(2*np.pi*n_air)*a
 
         self.F, self.FFt, self.FFt_abs_amp,self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F, FFt, FFt_abs_amp,F2_abs_amp, F3_ifft_abs_amp, wrap, T[peak], F3_ifft_abs_amp
@@ -220,16 +220,31 @@ class AbsoluteDistance():
 
 
 
-CUT_T = 8e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_WIDTH = 4e-10
-CUT_WIDTH = 4e-11
+CUT_T = 40e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 30e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 10e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 5e-12  # 大きいほど，o付近をつぶ(光源の影響)
 
-CUT_WIDTH = 4e-12
-# CUT_WIDTH = 4e-13
-# CUT_WIDTH = 4e-14
-# CUT_WIDTH = 4e-15
+# CUT_T = 1e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 0.5e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 0.1e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 0.05e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_WIDTH = 10e-12
+CUT_WIDTH = 40e-12
+# CUT_WIDTH = 80e-12
+CUT_WIDTH = 1e-12
+CUT_WIDTH = 0.5e-12
+# CUT_WIDTH = 4e-11
+
+# CUT_WIDTH = 4e-12
+CUT_WIDTH = 4e-13
+CUT_WIDTH = 4e-14
+CUT_WIDTH = 4e-15
 # CUT_WIDTH = 4e-16
 
+CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_WIDTH = 50e-12
 
 
 
@@ -247,19 +262,19 @@ EXPNUM = 13  # 大きくしても結果はあまり変わらず．
 # https://qiita.com/amowwee/items/e63b3610ea750f7dba1b
 print("CSVをまとめたxlsxを選択")
 # matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ") #TODO
-matomexlsxpath = r"C:\Users\wsxhi\Dropbox\DATAz-axis_try_3rd\inter202109161816\CSV_matome.xlsx"
+matomexlsxpath = r"C:\Users\anonymous\Dropbox\DATAz-axis_try_4th\inter\CSV_matome.xlsx"
 
-df_sortedinfo = pd.read_excel(matomexlsxpath,index_col = 0, sheet_name = "sort")
+df_sort = pd.read_excel(matomexlsxpath,index_col = 0, sheet_name = "sort")
 
 # faile nameをxlsxからListとして取得
 # 辞書⇒Dataframe
 # https://qiita.com/ShoheiKojima/items/30ee0925472b7b3e5d5c
-names_rawdata = df_sortedinfo.loc["NAME",:].to_list()
+names_rawdata = df_sort.loc["NAME",:].to_list()
 
 
 # raw dataが入ったフォルダを指定
 # path_folder_RawData = Dialog_Folder(caption="CSVのフォルダを選ぶ") #TODO
-path_folder_RawData =r"C:\Users\wsxhi\Dropbox\DATAz-axis_try_3rd\inter202109161816"
+path_folder_RawData =r"C:\Users\anonymous\Dropbox\DATAz-axis_try_4th\inter\inter202110091444"
 paths_raw_data = [os.path.join(
     path_folder_RawData, names_rawdata[i]+".csv") for i in range(len(names_rawdata))]
 # paths_raw_data = df_sorteddata.loc["filepaths",:].to_list()
@@ -291,7 +306,7 @@ for i in range(calc_len):
     filepath = paths_raw_data[i]
 
     BPF_method.path_difference(
-        filepath, cutT=CUT_T, cutwidth=CUT_WIDTH, expnum=EXPNUM,removeT = [57.5e-12, 77.5e-12])
+        filepath, cutT=CUT_T, cutwidth=CUT_WIDTH, expnum=EXPNUM,)
 
     df_resultParams["T_peak"].append(BPF_method.T_peak)
     df_resultParams["a"].append(BPF_method.a)
@@ -348,16 +363,14 @@ df_resultParamsOptimized.to_excel(filepathx)
 # =============================================================================
 # 位置測定の結果をサンプリングナンバー順にプロット
 # =============================================================================
-print("*", end="")
-displacement = [-7]*50 + [-6]*50+[-5]*50+[-4]*50+[-3]*50+[-2]*50+[-1]*50+[0]*50+[1]*50+[2]*50+[3]*50+[4]*50+[5]*50+[6]*50+[7]*50
 
 
-plt.scatter(displacement,df_resultParams["path_diff"],s=2)
+plt.scatter(df_sort.loc["Posi_pls",:].astype(int),df_resultParams["path_diff"],s=2)
 
 # plt.ylim(0.005, 0.01)
 plt.title("cutT="+str(CUT_T) +
-          "_"+"cutwidth="+str(CUT_WIDTH)+"_"+"expnum="+str(EXPNUM))
-plt.ylim(0.0052,0.007)
+          "\n"+"cutwidth="+str(CUT_WIDTH)+"\n"+"expnum="+str(EXPNUM))
+# plt.ylim(0.0035,0.006)
 
 
 """
