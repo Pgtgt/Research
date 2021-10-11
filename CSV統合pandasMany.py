@@ -21,6 +21,8 @@ import pandas as pd
 from icecream import ic
 import re
 import sys
+from PyQt5 import QtWidgets
+app_dialog_file = QtWidgets.QApplication(sys.argv)
 
 # Out[23]: ['33', '4', '5', '6', '7', '1']
 
@@ -38,10 +40,10 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
         folderpath (str): folder path.
 
     """
-    from PyQt5 import QtWidgets
+
     # 実行ディレクトリ取得D
     # ディレクトリ選択ダイアログを表示-
-    app_dialog_file = QtWidgets.QApplication(sys.argv)
+
     filepath = QtWidgets.QFileDialog.getOpenFileName(
         parent=None, caption=caption, directory=rootpath)
 
@@ -61,8 +63,6 @@ def Dialog_Folder(rootpath=r"C:", caption="choise"):
         filepath (str): file path.
 
     """
-    from PyQt5 import QtWidgets
-    # ディレクトリ選択ダイアログを表示
     folderpath = QtWidgets.QFileDialog.getExistingDirectory(
         parent=None, caption=caption, directory=rootpath)
     return folderpath
@@ -79,7 +79,7 @@ https://niwakomablog.com/python-number-extract/#:~:text=%E4%BD%BF%E3%81%84%E6%96
 
 
 # =============================================================================
-# まとめる対象のフォルダを選択し，ファイル名より情報をソートしたdf_sort_sortedを創る
+# まとめる対象のフォルダを選択し，ファイル名より情報をソートしたdf_sortを創る
 # =============================================================================
 folderpath = Dialog_Folder()
 
@@ -114,6 +114,7 @@ df_sort = pd.DataFrame(sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pl
 
 
 df_sort.columns = df_sort.loc["NAME"].values.tolist()
+df_sort = df_sort.sort_index(axis = "columns")
 
 # =============================================================================
 # df_sortの順番に従い実際にcsvファイルの情報を取り込んだdf_wholedataを創る
@@ -132,7 +133,7 @@ df_wholedata = pd.concat([df_index_freq, df_intensities], axis=1)
 df_wholedata.loc[28:] = df_wholedata.loc[28:].astype(float)
 df_wholedata = df_wholedata.set_index(0)
 df_wholedata.columns = df_sort.loc["NAME"].values.tolist()
-
+df_wholedata = df_wholedata.sort_index(axis = "columns")
 
 # =============================================================================
 # １つのＸＬＳＸフォルダにdf_wholedata, dfsortframe _sortedを保存する．
