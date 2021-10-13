@@ -63,8 +63,8 @@ class AbsoluteDistance():
         self.filepath = filepath
         wholedata = pd.read_csv(self.filepath, header=None, skiprows=34).values
         # wholedataの[:,0]を取り出した後，ravel1で次元配列へ直す 単位も　Hz, Wへ変換
-        Fdata = np.flipud(wholedata[:, 0].ravel())*10e+12
-        Idata = np.flipud(wholedata[:, 1].ravel())*10e-3
+        Fdata = np.flipud(wholedata[:, 0].ravel())*1e+12
+        Idata = np.flipud(wholedata[:, 1].ravel())*1e-3
         return Fdata, Idata
 
     def Inter(self, x, y, expnum=16):
@@ -243,12 +243,23 @@ CUT_WIDTH = 4e-14
 CUT_WIDTH = 4e-15
 # CUT_WIDTH = 4e-16
 
-CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_WIDTH = 50e-12
+CUT_T =60e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_WIDTH = 0.1e-12
+# CUT_WIDTH = 60e-12
+# CUT_WIDTH = 40e-12
+# CUT_WIDTH = 30e-12
+# CUT_WIDTH = 20e-12
+# CUT_WIDTH = 10e-12
+# CUT_WIDTH = 5e-12
+# CUT_WIDTH = 1e-12
+# CUT_WIDTH = 0.5e-12
+
+# CUT_WIDTH = 0.1e-12
 
 
 
-EXPNUM = 13  # 大きくしても結果はあまり変わらず．
+
+EXPNUM = 14  # 大きくしても結果はあまり変わらず．
 
 
 
@@ -370,6 +381,8 @@ plt.scatter(df_sort.loc["Posi_pls",:].astype(int),df_resultParams["path_diff"],s
 # plt.ylim(0.005, 0.01)
 plt.title("cutT="+str(CUT_T) +
           "\n"+"cutwidth="+str(CUT_WIDTH)+"\n"+"expnum="+str(EXPNUM))
+plt.xlim(-20000, 20000)
+plt.ylim(0.035, 0.055)
 # plt.ylim(0.0035,0.006)
 
 
