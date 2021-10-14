@@ -259,68 +259,12 @@ class AbsoluteDistance():
         self.phi, self.a, self.b, self.R2, self.n_air, self.path_diff = phi, a, b, R2, n_air, path_diff
 
 
-# OPTIMIZE:tunig
-# =============================================================================
-# param tuning
-# 最適地20210905 +1-ref
-# CUT_T = 15e-12
-# CUT_WIDTH = 0.00001e-12# 0.001 0.01もかわらず
-# EXPNUM = 14
-# 最適地　inter 20210925
-# CUT_T = 8e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_WIDTH = 4e-13
-# =============================================================================
-
-
-CUT_T = 40e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_T = 30e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_T = 10e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 5e-12  # 大きいほど，o付近をつぶ(光源の影響)
-
-# CUT_T = 1e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 0.5e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 0.1e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 0.05e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_WIDTH = 10e-12
-CUT_WIDTH = 40e-12
-# CUT_WIDTH = 80e-12
-CUT_WIDTH = 1e-12
-CUT_WIDTH = 0.5e-12
-# CUT_WIDTH = 4e-11
-
-# CUT_WIDTH = 4e-12
-CUT_WIDTH = 4e-13
-CUT_WIDTH = 4e-14
-CUT_WIDTH = 4e-15
-# CUT_WIDTH = 4e-16
-
-CUT_T = 60e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_WIDTH = 0.1e-12
-# CUT_WIDTH = 60e-12
-# CUT_WIDTH = 40e-12
-# CUT_WIDTH = 30e-12
-# CUT_WIDTH = 20e-12
-# CUT_WIDTH = 10e-12
-# CUT_WIDTH = 5e-12
-# CUT_WIDTH = 1e-12
-# CUT_WIDTH = 0.5e-12
-
-# CUT_WIDTH = 0.1e-12
-
-
-EXPNUM = 14  # 大きくしても結果はあまり変わらず．
-
-
 
 # =============================================================================
 # 指定フォルダからCSVを探索 BPF_method (AbsoluteDinstance()のインスタンス)の引数にする絶対パスリストpaths_raw_dataを得るプロセス
 # =============================================================================
 
 
-# folderpath = Dialog_Folder()
-# filepaths = glob.glob(os.path.join(folderpath, "*.csv"),)
-# https://qiita.com/amowwee/items/e63b3610ea750f7dba1b
 print("CSVをまとめたxlsxを選択")
 matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")  # TODO
 # matomexlsxpath = r"C:\Users\anonymous\Dropbox\DATAz-axis_try_4th\inter\CSV_matome.xlsx"
@@ -344,72 +288,79 @@ df_resultParams = pd.DataFrame(
     index=["T_peak", "a", "b", "R2", "path_diff", "cutT", "cutwidth", "expnum"], columns=names_rawdata)
 df_phi = pd.DataFrame(columns=names_rawdata)
 
-# =============================================================================
-# name_rawdataのデータを全て計算する
-# =============================================================================
-
-for i_name in names_rawdata:
-
-    """
-    i番目のデータにたいし，分析を行って行く．
-    その後ほしいパラメータをdf_resultParamsに追加していく
-    """
-    I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values
-    list_HyperParams
-    BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
-                               cutT=CUT_T, cutwidth=CUT_WIDTH, expnum=EXPNUM,)
-
-    df_resultParams.loc["T_peak", i_name] = BPF_method.T_peak
-    df_resultParams.loc["a", i_name] = BPF_method.a
-    df_resultParams.loc["b", i_name] = BPF_method.b
-    df_resultParams.loc["R2", i_name] = BPF_method.R2
-    df_resultParams.loc["path_diff", i_name] = BPF_method.path_diff
-    df_resultParams.loc["cutT", i_name] = BPF_method.cutT
-    df_resultParams.loc["cutwidth", i_name] = BPF_method.cutwidth
-    df_resultParams.loc["expnum", i_name] = BPF_method.expnum
-
-    df_phi.loc[:, i_name] = BPF_method.phi
-    print("\r"+i_name, end="")
-
-df_phi.index = BPF_method.F
 
 # =============================================================================
-# データ保存手続き
+# list_HyperParamsのデータを適用し，分析を回す．
 # =============================================================================
 
-# df_resultParamsをdf_resultParamsOptimized(Dataframe)に変換・成型
-# df_resultParamsOptimized = pd.DataFrame.from_dict(df_resultParams).T
-# df_resultParamsOptimized.columns = names_rawdata
+for idict_Params in list_HyperParams:
 
-#　matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない
-dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults")
-if os.path.exists(dir_Ana) == False:
-    os.path.mkdir(dir_Ana)
-else:
-    pass
+    # =============================================================================
+    # name_rawdataのデータを全て計算する
+    # =============================================================================
 
-name_file_AnaResult = "Ana"+"cutT" + \
-    str(CUT_T) + "_"+"cutwidth"+str(CUT_WIDTH)+"_"+"expnum"+str(EXPNUM)+".xlsx"
-path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
+    for i_name in names_rawdata:
 
-df_resultParams(path_AnaResult)
+        """
+        i番目のデータにたいし，分析を行って行く．
+        その後ほしいパラメータをdf_resultParamsに追加していく
+        """
+        I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values
+        list_HyperParams
+        BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
+                                   cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"])
 
-# JUMP_FREQ = 8 #OPTIMIZE tuning
-# df_F_phi_dev8 = df_F_phi[::JUMP_FREQ]
-# df_F_phi_dev8.to_excel("f_F_phi_dev8.xlsx")
+        df_resultParams.loc["T_peak", i_name] = BPF_method.T_peak
+        df_resultParams.loc["a", i_name] = BPF_method.a
+        df_resultParams.loc["b", i_name] = BPF_method.b
+        df_resultParams.loc["R2", i_name] = BPF_method.R2
+        df_resultParams.loc["path_diff", i_name] = BPF_method.path_diff
+        df_resultParams.loc["cutT", i_name] = BPF_method.cutT
+        df_resultParams.loc["cutwidth", i_name] = BPF_method.cutwidth
+        df_resultParams.loc["expnum", i_name] = BPF_method.expnum
 
-# =============================================================================
-# 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
-# =============================================================================
+        df_phi.loc[:, i_name] = BPF_method.phi
+        print("\r"+i_name, end="")
 
-plt.scatter(df_sort.loc["Posi_pls", :].astype(int), df_resultParams["path_diff"], s=2)
+    df_phi.index = BPF_method.F
 
-# plt.ylim(0.005, 0.01)
-plt.title("cutT="+str(CUT_T) +
-          "\n"+"cutwidth="+str(CUT_WIDTH)+"\n"+"expnum="+str(EXPNUM))
-plt.xlim(-20000, 20000)
-plt.ylim(0.035, 0.055)
-# plt.ylim(0.0035,0.006)
+    # =============================================================================
+    # データ保存手続き
+    # =============================================================================
+
+    # df_resultParamsをdf_resultParamsOptimized(Dataframe)に変換・成型
+    # df_resultParamsOptimized = pd.DataFrame.from_dict(df_resultParams).T
+    # df_resultParamsOptimized.columns = names_rawdata
+
+    #　matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない
+    dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults")
+    if os.path.exists(dir_Ana) == False:
+        os.path.mkdir(dir_Ana)
+    else:
+        pass
+
+    name_file_AnaResult = "Ana"+"cutT" + \
+        str(CUT_T) + "_"+"cutwidth"+str(CUT_WIDTH)+"_"+"expnum"+str(EXPNUM)+".xlsx"
+    path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
+
+    df_resultParams(path_AnaResult)
+
+    # JUMP_FREQ = 8 #OPTIMIZE tuning
+    # df_F_phi_dev8 = df_F_phi[::JUMP_FREQ]
+    # df_F_phi_dev8.to_excel("f_F_phi_dev8.xlsx")
+
+    # =============================================================================
+    # 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
+    # =============================================================================
+
+    plt.scatter(df_sort.loc["Posi_pls", :].astype(int), df_resultParams["path_diff"], s=2)
+
+    # plt.ylim(0.005, 0.01)
+    plt.title("cutT="+str(CUT_T) +
+              "\n"+"cutwidth="+str(CUT_WIDTH)+"\n"+"expnum="+str(EXPNUM))
+    plt.xlim(-20000, 20000)
+    plt.ylim(0.035, 0.055)
+    # plt.ylim(0.0035,0.006)
 
 
 """
