@@ -19,6 +19,7 @@ from icecream import ic
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
+import scipy as sp
 
 # OPTIMIZE:tunig
 # =============================================================================
@@ -31,7 +32,6 @@ import ref_index
 # CUT_T = 8e-12  # 大きいほど，o付近をつぶ(光源の影響)
 # CUT_WIDTH = 4e-13
 # =============================================================================
-
 
 
 CUT_T = 40e-12  # 大きいほど，o付近をつぶ(光源の影響)
@@ -67,10 +67,11 @@ EXPNUM = 14  # 大きくしても結果はあまり変わらず．
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
 list_HyperParams = (
     dict(cutT=6e-10, cutwidth=1e-9, expnum=14),
-    )
+)
 
 
-n_air=ref_index.edlen(wave = (1554.134049+1563.862587)/2 ,t=27, p =101325, rh=70)
+n_air = ref_index.edlen(wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+
 
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
@@ -145,13 +146,18 @@ class AbsoluteDistance():
 
     def FFT(self, x, y):  # 等間隔データをFFT
         N = len(x)
-        FFt = np.fft.fft(y)
-        FFt_abs = np.abs(FFt)
-        FFt_abs_amp = FFt_abs/(N/2)
+        FF = np.fft.fft(y)
         dx = np.abs((x[-1]-x[0])/(N-1))
-        f = np.linspace(0, 1.0/dx, N)
+        freq = sp.fftpack.fftfreq(len(FF), d=1/dx)
 
-        return f, FFt, FFt_abs_amp
+        freq = np.concatenate([freq[int(N/2):], freq[:int(N/2)]])
+        FF = np.concatenate([FF[int(N/2):], FF[:int(N/2)]])
+
+        FF_abs = np.abs(FF)
+        FF_abs_amp = FF_abs/(N/2)
+
+        # f=np.linspace(0,1.0/dx,N)
+        return freq, FF, FF_abs_amp
 
     def wrappedphase(self, e):
         """
@@ -171,7 +177,7 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self,F_unequal ,I_unequal,cutT=10e-12, cutwidth=1e-12, expnum=16, removeT=[None, None]):
+    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, removeT=[None, None]):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
         結果が欲しいときは'self.path_diff'とかで呼び出す
@@ -187,7 +193,7 @@ class AbsoluteDistance():
             None
 
         """
-        cutT, cutwidth, expnum =cutT, cutwidth, expnum
+        cutT, cutwidth, expnum = cutT, cutwidth, expnum
         # 補間 I(f_uneq) => I(f_euneq)
         F, I, SampNum_inter, dF = self.Inter(F_unequal, I_unequal, expnum)
 
@@ -203,8 +209,9 @@ class AbsoluteDistance():
         #   ====> F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
         # =============================================================================
         F2 = copy.deepcopy(FFt)
+        F2[(T > 0)] = 0  # 1/2後半の(負の)周波数帯をカット
         F2[(T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
-        F2[(T > T[2**(expnum-1)])] = 0  # 1/2後半の(負の)周波数帯をカット
+
         F2_abs = np.abs(F2)
         # 振幅をもとの信号に揃える
         F2_abs_amp = F2_abs / SampNum_inter * 2  # 交流成分はデータ数で割って2倍
@@ -234,7 +241,7 @@ class AbsoluteDistance():
         # wrap=F3_ifft
         # wrap_abs=np.abs(wrap)
 
-        phi = np.unwrap(p = wrap *2)/2
+        phi = np.unwrap(p=wrap * 2)/2
 
         a, b = np.polyfit(F, phi, 1)  # phi = a *F + bの1じ多項式近似
         # a =2 pi Dd n / c
@@ -246,14 +253,12 @@ class AbsoluteDistance():
 
         path_diff = 299792458/(2*np.pi*n_air)*a
 
-        self.F, self.FFt, self.FFt_abs_amp,self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F, FFt, FFt_abs_amp,F2_abs_amp, F3_ifft_abs_amp, wrap, T[peak], F3_ifft_abs_amp
+        self.F, self.FFt, self.FFt_abs_amp, self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F, FFt, FFt_abs_amp, F2_abs_amp, F3_ifft_abs_amp, wrap, T[
+            peak], F3_ifft_abs_amp
         self.cutT, self.cutwidth, self.expnum = cutT, cutwidth, expnum
         self.phi, self.a, self.b, self.R2, self.n_air, self.path_diff = phi, a, b, R2, n_air, path_diff
 
 
-
-<<<<<<< HEAD:BPF.py
-=======
 # OPTIMIZE:tunig
 # =============================================================================
 # param tuning
@@ -265,7 +270,6 @@ class AbsoluteDistance():
 # CUT_T = 8e-12  # 大きいほど，o付近をつぶ(光源の影響)
 # CUT_WIDTH = 4e-13
 # =============================================================================
-
 
 
 CUT_T = 40e-12  # 大きいほど，o付近をつぶ(光源の影響)
@@ -291,7 +295,7 @@ CUT_WIDTH = 4e-14
 CUT_WIDTH = 4e-15
 # CUT_WIDTH = 4e-16
 
-CUT_T =60e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 60e-12  # 大きいほど，o付近をつぶ(光源の影響)
 CUT_WIDTH = 0.1e-12
 # CUT_WIDTH = 60e-12
 # CUT_WIDTH = 40e-12
@@ -305,11 +309,8 @@ CUT_WIDTH = 0.1e-12
 # CUT_WIDTH = 0.1e-12
 
 
-
-
 EXPNUM = 14  # 大きくしても結果はあまり変わらず．
 
->>>>>>> d79de1098e3afbc3b16526eeab89318278223804:幾何経路.py
 
 
 # =============================================================================
@@ -321,17 +322,17 @@ EXPNUM = 14  # 大きくしても結果はあまり変わらず．
 # filepaths = glob.glob(os.path.join(folderpath, "*.csv"),)
 # https://qiita.com/amowwee/items/e63b3610ea750f7dba1b
 print("CSVをまとめたxlsxを選択")
-matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ") #TODO
+matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")  # TODO
 # matomexlsxpath = r"C:\Users\anonymous\Dropbox\DATAz-axis_try_4th\inter\CSV_matome.xlsx"
 
-df_wholedata = pd.read_excel(matomexlsxpath,index_col = 0, sheet_name = "wholedata")
-df_sort = pd.read_excel(matomexlsxpath,index_col = 0, sheet_name = "sort")
+df_wholedata = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="wholedata")
+df_sort = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="sort")
 
 F_uneq = df_wholedata.index[28:].astype(float).values
 # faile nameをxlsxからListとして取得
 # 辞書⇒Dataframe
 # https://qiita.com/ShoheiKojima/items/30ee0925472b7b3e5d5c
-names_rawdata = df_sort.loc["NAME",:].to_list()
+names_rawdata = df_sort.loc["NAME", :].to_list()
 
 # =============================================================================
 # 計算用インスタンスBPF_method と結果格納データフレームdf_resultParams df_phiの準備
@@ -339,8 +340,9 @@ names_rawdata = df_sort.loc["NAME",:].to_list()
 
 BPF_method = AbsoluteDistance()
 
-df_resultParams = pd.DataFrame(index = ["T_peak","a","b","R2","path_diff","cutT","cutwidth","expnum"], columns = names_rawdata)
-df_phi = pd.DataFrame(columns = names_rawdata)
+df_resultParams = pd.DataFrame(
+    index=["T_peak", "a", "b", "R2", "path_diff", "cutT", "cutwidth", "expnum"], columns=names_rawdata)
+df_phi = pd.DataFrame(columns=names_rawdata)
 
 # =============================================================================
 # name_rawdataのデータを全て計算する
@@ -352,20 +354,21 @@ for i_name in names_rawdata:
     i番目のデータにたいし，分析を行って行く．
     その後ほしいパラメータをdf_resultParamsに追加していく
     """
-    I_uneq = df_wholedata.loc[:,i_name][28:].astype(float).values
+    I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values
     list_HyperParams
-    BPF_method.path_difference(F_unequal = F_uneq, I_unequal=I_uneq, cutT=CUT_T, cutwidth=CUT_WIDTH, expnum=EXPNUM,)
+    BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
+                               cutT=CUT_T, cutwidth=CUT_WIDTH, expnum=EXPNUM,)
 
-    df_resultParams.loc["T_peak",i_name] = BPF_method.T_peak
-    df_resultParams.loc["a",i_name] = BPF_method.a
-    df_resultParams.loc["b",i_name] = BPF_method.b
-    df_resultParams.loc["R2",i_name] = BPF_method.R2
-    df_resultParams.loc["path_diff",i_name] = BPF_method.path_diff
-    df_resultParams.loc["cutT",i_name] = BPF_method.cutT
-    df_resultParams.loc["cutwidth",i_name] = BPF_method.cutwidth
-    df_resultParams.loc["expnum",i_name] = BPF_method.expnum
+    df_resultParams.loc["T_peak", i_name] = BPF_method.T_peak
+    df_resultParams.loc["a", i_name] = BPF_method.a
+    df_resultParams.loc["b", i_name] = BPF_method.b
+    df_resultParams.loc["R2", i_name] = BPF_method.R2
+    df_resultParams.loc["path_diff", i_name] = BPF_method.path_diff
+    df_resultParams.loc["cutT", i_name] = BPF_method.cutT
+    df_resultParams.loc["cutwidth", i_name] = BPF_method.cutwidth
+    df_resultParams.loc["expnum", i_name] = BPF_method.expnum
 
-    df_phi.loc[:,i_name] = BPF_method.phi
+    df_phi.loc[:, i_name] = BPF_method.phi
     print("\r"+i_name, end="")
 
 df_phi.index = BPF_method.F
@@ -379,13 +382,14 @@ df_phi.index = BPF_method.F
 # df_resultParamsOptimized.columns = names_rawdata
 
 #　matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない
-dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0],"AnaResults")
+dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults")
 if os.path.exists(dir_Ana) == False:
     os.path.mkdir(dir_Ana)
 else:
     pass
 
-name_file_AnaResult =  "Ana"+"cutT"+str(CUT_T) + "_"+"cutwidth"+str(CUT_WIDTH)+"_"+"expnum"+str(EXPNUM)+".xlsx"
+name_file_AnaResult = "Ana"+"cutT" + \
+    str(CUT_T) + "_"+"cutwidth"+str(CUT_WIDTH)+"_"+"expnum"+str(EXPNUM)+".xlsx"
 path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
 
 df_resultParams(path_AnaResult)
@@ -398,7 +402,7 @@ df_resultParams(path_AnaResult)
 # 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
 # =============================================================================
 
-plt.scatter(df_sort.loc["Posi_pls",:].astype(int),df_resultParams["path_diff"],s=2)
+plt.scatter(df_sort.loc["Posi_pls", :].astype(int), df_resultParams["path_diff"], s=2)
 
 # plt.ylim(0.005, 0.01)
 plt.title("cutT="+str(CUT_T) +
