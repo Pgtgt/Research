@@ -111,8 +111,8 @@ class AbsoluteDistance():
         self.filepath = filepath
         wholedata = pd.read_csv(self.filepath, header=None, skiprows=34).values
         # wholedataの[:,0]を取り出した後，ravel1で次元配列へ直す 単位も　Hz, Wへ変換
-        Fdata = np.flipud(wholedata[:, 0].ravel())*10e+12
-        Idata = np.flipud(wholedata[:, 1].ravel())*10e-3
+        Fdata = np.flipud(wholedata[:, 0].ravel())*1e+12
+        Idata = np.flipud(wholedata[:, 1].ravel())*1e-3
         return Fdata, Idata
 
     def Inter(self, x, y, expnum=16):
@@ -252,6 +252,64 @@ class AbsoluteDistance():
 
 
 
+<<<<<<< HEAD:BPF.py
+=======
+# OPTIMIZE:tunig
+# =============================================================================
+# param tuning
+# 最適地20210905 +1-ref
+# CUT_T = 15e-12
+# CUT_WIDTH = 0.00001e-12# 0.001 0.01もかわらず
+# EXPNUM = 14
+# 最適地　inter 20210925
+# CUT_T = 8e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_WIDTH = 4e-13
+# =============================================================================
+
+
+
+CUT_T = 40e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 30e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_T = 10e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 5e-12  # 大きいほど，o付近をつぶ(光源の影響)
+
+# CUT_T = 1e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 0.5e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 0.1e-12  # 大きいほど，o付近をつぶ(光源の影響)
+# CUT_T = 0.05e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_WIDTH = 10e-12
+CUT_WIDTH = 40e-12
+# CUT_WIDTH = 80e-12
+CUT_WIDTH = 1e-12
+CUT_WIDTH = 0.5e-12
+# CUT_WIDTH = 4e-11
+
+# CUT_WIDTH = 4e-12
+CUT_WIDTH = 4e-13
+CUT_WIDTH = 4e-14
+CUT_WIDTH = 4e-15
+# CUT_WIDTH = 4e-16
+
+CUT_T =60e-12  # 大きいほど，o付近をつぶ(光源の影響)
+CUT_WIDTH = 0.1e-12
+# CUT_WIDTH = 60e-12
+# CUT_WIDTH = 40e-12
+# CUT_WIDTH = 30e-12
+# CUT_WIDTH = 20e-12
+# CUT_WIDTH = 10e-12
+# CUT_WIDTH = 5e-12
+# CUT_WIDTH = 1e-12
+# CUT_WIDTH = 0.5e-12
+
+# CUT_WIDTH = 0.1e-12
+
+
+
+
+EXPNUM = 14  # 大きくしても結果はあまり変わらず．
+
+>>>>>>> d79de1098e3afbc3b16526eeab89318278223804:幾何経路.py
 
 
 # =============================================================================
@@ -345,6 +403,8 @@ plt.scatter(df_sort.loc["Posi_pls",:].astype(int),df_resultParams["path_diff"],s
 # plt.ylim(0.005, 0.01)
 plt.title("cutT="+str(CUT_T) +
           "\n"+"cutwidth="+str(CUT_WIDTH)+"\n"+"expnum="+str(EXPNUM))
+plt.xlim(-20000, 20000)
+plt.ylim(0.035, 0.055)
 # plt.ylim(0.0035,0.006)
 
 
