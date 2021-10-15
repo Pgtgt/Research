@@ -1,10 +1,6 @@
 
-# import pandas as pd
 import numpy as np
-# import os, tkinter, tkinter.filedialog, tkinter.messagebox
-from scipy import interpolate
 # import matplotlib.pyplot as plt
-
 import sys
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
@@ -14,8 +10,8 @@ import plotly
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
-import scipy as sp
-
+from scipy.fftpack import fft, fftfreq
+from scipy import interpolate
 
 def Dialog_File(rootpath_init =r"C:"):
     """
@@ -75,15 +71,15 @@ def Inter(x,y,expnum):
 def OSAcsvfre_In(file): #fre-IのOSA信号(35行目から)をよむ　また，単位をTHz =>Hz, mW => Wへ修正
     import pandas as pd
     wholedata = pd.read_csv(file, header=None, skiprows=34).values
-    Fdata=np.flipud(wholedata[:,0].ravel())*10**12#小さい周波数から格納
-    Idata=np.flipud(wholedata[:,1].ravel())*10**-3
+    Fdata=np.flipud(wholedata[:,0].ravel())*1e12#小さい周波数から格納
+    Idata=np.flipud(wholedata[:,1].ravel())*1e-3
     return Fdata,Idata
 
 def FFT(x,y):
     N=len(x)
     FF=np.fft.fft(y)
     dx=np.abs((x[-1]-x[0])/(N-1))
-    freq = sp.fftpack.fftfreq(len(FF), d=1/dx)
+    freq = fftfreq(len(FF), d =dx)
 
     freq=np.concatenate([freq[int(Ninter/2):],freq[:int(Ninter/2)]])
     FF=np.concatenate([FF[int(Ninter/2):],FF[:int(Ninter/2)]])
@@ -91,7 +87,6 @@ def FFT(x,y):
     FF_abs=np.abs(FF)
     FF_abs_amp=FF_abs/(N/2)
 
-    # f=np.linspace(0,1.0/dx,N)
     return freq,FF,FF_abs_amp
 
 
