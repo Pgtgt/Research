@@ -19,8 +19,7 @@ from icecream import ic
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
-import scipy as sp
-
+from scipy.fftpack import fft, fftfreq
 # OPTIMIZE:tunig
 # =============================================================================
 # param tuning
@@ -34,39 +33,31 @@ import scipy as sp
 # =============================================================================
 
 
-CUT_T = 40e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 30e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 10e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 5e-12  # 大きいほど，o付近をつぶ(光源の影響)
-
-# CUT_T = 1e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 0.5e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 0.1e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_T = 0.05e-12  # 大きいほど，o付近をつぶ(光源の影響)
-CUT_WIDTH = 10e-12
-CUT_WIDTH = 40e-12
-# CUT_WIDTH = 80e-12
-CUT_WIDTH = 1e-12
-CUT_WIDTH = 0.5e-12
-# CUT_WIDTH = 4e-11
-
-CUT_WIDTH = 4e-12
-# CUT_WIDTH = 4e-13
-# CUT_WIDTH = 8e-13
-# CUT_WIDTH = 100e-12
-# CUT_WIDTH = 4e-14
-# CUT_WIDTH = 4e-15
-# CUT_WIDTH = 4e-16
-
-# CUT_T = 20e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_WIDTH = 50e-12
-
-EXPNUM = 14  # 大きくしても結果はあまり変わらず．
 
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
-list_HyperParams = (
-    dict(cutT=6e-10, cutwidth=1e-9, expnum=14),
+LIST_HYPERPARAMS = (
+    # dict(cutT=6e-10, cutwidth=1e-13, expnum=14),
+    # dict(cutT=6e-10, cutwidth=1e-12, expnum=14),
+    # dict(cutT=6e-10, cutwidth=1e-11, expnum=14),
+    # dict(cutT=6e-10, cutwidth=1e-10, expnum=14),
+    # dict(cutT=6e-10, cutwidth=1e-9, expnum=14),
+    # dict(cutT=6e-10, cutwidth=1e-8, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-7, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-13, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-12, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-11, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-10, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-9, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-8, expnum=14),
+    # dict(cutT=6e-11, cutwidth=1e-7, expnum=14),
+    dict(cutT=1e-10, cutwidth=1e-13, expnum=14), #Goo
+    dict(cutT=1e-10, cutwidth=1e-12, expnum=14), #Goo
+    dict(cutT=1e-10, cutwidth=1e-11, expnum=14),# こっちのほうがいいかも　局所的にみると
+    # dict(cutT=6e-12, cutwidth=1e-10, expnum=14),
+    # dict(cutT=6e-12, cutwidth=1e-9, expnum=14),
+    # dict(cutT=6e-12, cutwidth=1e-8, expnum=14),
+    # dict(cutT=6e-12, cutwidth=1e-7, expnum=14),
+
 )
 
 
@@ -148,7 +139,7 @@ class AbsoluteDistance():
         N = len(x)
         FF = np.fft.fft(y)
         dx = np.abs((x[-1]-x[0])/(N-1))
-        freq = sp.fftpack.fftfreq(len(FF), d=1/dx)
+        freq = fftfreq(len(FF), d=dx)
 
         freq = np.concatenate([freq[int(N/2):], freq[:int(N/2)]])
         FF = np.concatenate([FF[int(N/2):], FF[:int(N/2)]])
@@ -202,6 +193,7 @@ class AbsoluteDistance():
         # =============================================================================
         #
         T, FFt, FFt_abs_amp = self.FFT(F, I)
+        plt.plot(T,FFt_abs_amp)
         delta_T = (1.0/dF)/(SampNum_inter-1)
 
         # =============================================================================
@@ -209,13 +201,16 @@ class AbsoluteDistance():
         #   ====> F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
         # =============================================================================
         F2 = copy.deepcopy(FFt)
-        F2[(T > 0)] = 0  # 1/2後半の(負の)周波数帯をカット
+        F2[(T <= 0)] = 0  # (負の)周波数帯をカット
         F2[(T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
 
         F2_abs = np.abs(F2)
         # 振幅をもとの信号に揃える
         F2_abs_amp = F2_abs / SampNum_inter * 2  # 交流成分はデータ数で割って2倍
-
+        plt.plot(T,F2_abs_amp)
+        plt.xlim(-300e-12,300e-12)
+        plt.ylim(-0.2e-7,0.2e-6)
+        plt.show()
         # =============================================================================
         # Filtering:   F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
         #   ====>  F3(T)=C_2/2 exp(j*phi(T) )
@@ -229,7 +224,7 @@ class AbsoluteDistance():
             F3[((removeT[0] < T) & (T < removeT[1]))] = 0  # removeT間は0にする
 
         peak = np.argmax(F2_abs_amp)
-
+        print(str(T[peak]) )
         F3[((T < T[peak]-cutwidth/2) | (T[peak]+cutwidth/2 < T))] = 0  # 所望のピークだけのこす
 
         # IFFT   F3(T)=C_2/2 exp(j*phi(T) )  ====>  I(f)=C_2/2 exp(j*phi(f) )
@@ -242,18 +237,26 @@ class AbsoluteDistance():
         # wrap_abs=np.abs(wrap)
 
         phi = np.unwrap(p=wrap * 2)/2
+        global phi_
+        global F_
+        phi_ =phi
+        F_=F
+
 
         a, b = np.polyfit(F, phi, 1)  # phi = a *F + bの1じ多項式近似
+        # https://biotech-lab.org/articles/4907 R2値
+        R2 = metrics.r2_score(phi, a * F + b)
+        path_diff = 299792458/(2*np.pi*n_air)*a
+
         # a =2 pi Dd n / c
         # b = phi余り
         # Dd = path_diff
 
-        # https://biotech-lab.org/articles/4907 R2値
-        R2 = metrics.r2_score(phi, a * F + b)
 
-        path_diff = 299792458/(2*np.pi*n_air)*a
 
-        self.F, self.FFt, self.FFt_abs_amp, self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F, FFt, FFt_abs_amp, F2_abs_amp, F3_ifft_abs_amp, wrap, T[
+
+
+        self.F,self.T, self.FFt, self.FFt_abs_amp, self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F,T, FFt, FFt_abs_amp, F2_abs_amp, F3_ifft_abs_amp, wrap, T[
             peak], F3_ifft_abs_amp
         self.cutT, self.cutwidth, self.expnum = cutT, cutwidth, expnum
         self.phi, self.a, self.b, self.R2, self.n_air, self.path_diff = phi, a, b, R2, n_air, path_diff
@@ -266,13 +269,12 @@ class AbsoluteDistance():
 
 
 print("CSVをまとめたxlsxを選択")
-matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")  # TODO
-# matomexlsxpath = r"C:\Users\anonymous\Dropbox\DATAz-axis_try_4th\inter\CSV_matome.xlsx"
+matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")
 
 df_wholedata = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="wholedata")
 df_sort = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="sort")
 
-F_uneq = df_wholedata.index[28:].astype(float).values
+F_uneq = df_wholedata.index[28:].astype(float).values *1e12
 # faile nameをxlsxからListとして取得
 # 辞書⇒Dataframe
 # https://qiita.com/ShoheiKojima/items/30ee0925472b7b3e5d5c
@@ -290,11 +292,11 @@ df_phi = pd.DataFrame(columns=names_rawdata)
 
 
 # =============================================================================
-# list_HyperParamsのデータを適用し，分析を回す．
+# LIST_HYPERPARAMSのデータを適用し，分析を回す．
 # =============================================================================
 
-for idict_Params in list_HyperParams:
-
+for idict_Params in LIST_HYPERPARAMS:
+    print(idict_Params)
     # =============================================================================
     # name_rawdataのデータを全て計算する
     # =============================================================================
@@ -305,8 +307,8 @@ for idict_Params in list_HyperParams:
         i番目のデータにたいし，分析を行って行く．
         その後ほしいパラメータをdf_resultParamsに追加していく
         """
-        I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values
-        list_HyperParams
+        I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values*1e-3
+        # LIST_HYPERPARAMS
         BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
                                    cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"])
 
@@ -340,10 +342,10 @@ for idict_Params in list_HyperParams:
         pass
 
     name_file_AnaResult = "Ana"+"cutT" + \
-        str(CUT_T) + "_"+"cutwidth"+str(CUT_WIDTH)+"_"+"expnum"+str(EXPNUM)+".xlsx"
+        str(idict_Params["cutT"]) + "_"+"cutwidth"+str(idict_Params["cutwidth"])+"_"+"expnum"+str(idict_Params["expnum"])+".xlsx"
     path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
 
-    df_resultParams(path_AnaResult)
+    df_resultParams.to_excel(path_AnaResult)
 
     # JUMP_FREQ = 8 #OPTIMIZE tuning
     # df_F_phi_dev8 = df_F_phi[::JUMP_FREQ]
@@ -353,13 +355,14 @@ for idict_Params in list_HyperParams:
     # 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
     # =============================================================================
 
-    plt.scatter(df_sort.loc["Posi_pls", :].astype(int), df_resultParams["path_diff"], s=2)
+    plt.scatter(df_sort.loc["Posi_pls", :].astype(int), df_resultParams.loc["path_diff",:], s=2)
 
     # plt.ylim(0.005, 0.01)
-    plt.title("cutT="+str(CUT_T) +
-              "\n"+"cutwidth="+str(CUT_WIDTH)+"\n"+"expnum="+str(EXPNUM))
+    plt.title("cutT="+str(idict_Params["cutT"]) +
+              "\n"+"cutwidth="+str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"]))
     plt.xlim(-20000, 20000)
-    plt.ylim(0.035, 0.055)
+    # plt.ylim(0.035, 0.055)
+    plt.show()
     # plt.ylim(0.0035,0.006)
 
 
