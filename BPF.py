@@ -33,7 +33,6 @@ from scipy.fftpack import fft, fftfreq
 # =============================================================================
 
 
-
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
 LIST_HYPERPARAMS = (
     # dict(cutT=6e-10, cutwidth=1e-13, expnum=14),
@@ -50,9 +49,9 @@ LIST_HYPERPARAMS = (
     # dict(cutT=6e-11, cutwidth=1e-9, expnum=14),
     # dict(cutT=6e-11, cutwidth=1e-8, expnum=14),
     # dict(cutT=6e-11, cutwidth=1e-7, expnum=14),
-    dict(cutT=1e-10, cutwidth=1e-13, expnum=14), #Goo
-    dict(cutT=1e-10, cutwidth=1e-12, expnum=14), #Goo
-    dict(cutT=1e-10, cutwidth=1e-11, expnum=14),# こっちのほうがいいかも　局所的にみると
+    dict(cutT=1e-10, cutwidth=1e-13, expnum=14),  # Goo
+    dict(cutT=1e-10, cutwidth=1e-12, expnum=14),  # Goo
+    dict(cutT=1e-10, cutwidth=1e-11, expnum=14),  # こっちのほうがいいかも　局所的にみると
     # dict(cutT=6e-12, cutwidth=1e-10, expnum=14),
     # dict(cutT=6e-12, cutwidth=1e-9, expnum=14),
     # dict(cutT=6e-12, cutwidth=1e-8, expnum=14),
@@ -193,7 +192,7 @@ class AbsoluteDistance():
         # =============================================================================
         #
         T, FFt, FFt_abs_amp = self.FFT(F, I)
-        plt.plot(T,FFt_abs_amp)
+        plt.plot(T, FFt_abs_amp)
         delta_T = (1.0/dF)/(SampNum_inter-1)
 
         # =============================================================================
@@ -207,9 +206,9 @@ class AbsoluteDistance():
         F2_abs = np.abs(F2)
         # 振幅をもとの信号に揃える
         F2_abs_amp = F2_abs / SampNum_inter * 2  # 交流成分はデータ数で割って2倍
-        plt.plot(T,F2_abs_amp)
-        plt.xlim(-300e-12,300e-12)
-        plt.ylim(-0.2e-7,0.2e-6)
+        plt.plot(T, F2_abs_amp)
+        plt.xlim(-300e-12, 300e-12)
+        plt.ylim(-0.2e-7, 0.2e-6)
         plt.show()
         # =============================================================================
         # Filtering:   F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
@@ -224,7 +223,7 @@ class AbsoluteDistance():
             F3[((removeT[0] < T) & (T < removeT[1]))] = 0  # removeT間は0にする
 
         peak = np.argmax(F2_abs_amp)
-        print(str(T[peak]) )
+        print(str(T[peak]))
         F3[((T < T[peak]-cutwidth/2) | (T[peak]+cutwidth/2 < T))] = 0  # 所望のピークだけのこす
 
         # IFFT   F3(T)=C_2/2 exp(j*phi(T) )  ====>  I(f)=C_2/2 exp(j*phi(f) )
@@ -237,11 +236,6 @@ class AbsoluteDistance():
         # wrap_abs=np.abs(wrap)
 
         phi = np.unwrap(p=wrap * 2)/2
-        global phi_
-        global F_
-        phi_ =phi
-        F_=F
-
 
         a, b = np.polyfit(F, phi, 1)  # phi = a *F + bの1じ多項式近似
         # https://biotech-lab.org/articles/4907 R2値
@@ -252,21 +246,15 @@ class AbsoluteDistance():
         # b = phi余り
         # Dd = path_diff
 
-
-
-
-
-        self.F,self.T, self.FFt, self.FFt_abs_amp, self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F,T, FFt, FFt_abs_amp, F2_abs_amp, F3_ifft_abs_amp, wrap, T[
+        self.F, self.T, self.FFt, self.FFt_abs_amp, self.F2_abs_amp, self.F3_ifft_abs_amp, self.wrap, self.T_peak, self.F_ifft_abs_amp_filterd = F, T, FFt, FFt_abs_amp, F2_abs_amp, F3_ifft_abs_amp, wrap, T[
             peak], F3_ifft_abs_amp
         self.cutT, self.cutwidth, self.expnum = cutT, cutwidth, expnum
         self.phi, self.a, self.b, self.R2, self.n_air, self.path_diff = phi, a, b, R2, n_air, path_diff
 
 
-
 # =============================================================================
 # 指定フォルダからCSVを探索 BPF_method (AbsoluteDinstance()のインスタンス)の引数にする絶対パスリストpaths_raw_dataを得るプロセス
 # =============================================================================
-
 
 print("CSVをまとめたxlsxを選択")
 matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")
@@ -274,7 +262,7 @@ matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")
 df_wholedata = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="wholedata")
 df_sort = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="sort")
 
-F_uneq = df_wholedata.index[28:].astype(float).values *1e12
+F_uneq = df_wholedata.index[28:].astype(float).values * 1e12
 # faile nameをxlsxからListとして取得
 # 辞書⇒Dataframe
 # https://qiita.com/ShoheiKojima/items/30ee0925472b7b3e5d5c
@@ -342,7 +330,8 @@ for idict_Params in LIST_HYPERPARAMS:
         pass
 
     name_file_AnaResult = "Ana"+"cutT" + \
-        str(idict_Params["cutT"]) + "_"+"cutwidth"+str(idict_Params["cutwidth"])+"_"+"expnum"+str(idict_Params["expnum"])+".xlsx"
+        str(idict_Params["cutT"]) + "_"+"cutwidth"+str(idict_Params["cutwidth"]
+                                                       )+"_"+"expnum"+str(idict_Params["expnum"])+".xlsx"
     path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
 
     df_resultParams.to_excel(path_AnaResult)
@@ -355,7 +344,8 @@ for idict_Params in LIST_HYPERPARAMS:
     # 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
     # =============================================================================
 
-    plt.scatter(df_sort.loc["Posi_pls", :].astype(int), df_resultParams.loc["path_diff",:], s=2)
+    plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
+                df_resultParams.loc["path_diff", :], s=2)
 
     # plt.ylim(0.005, 0.01)
     plt.title("cutT="+str(idict_Params["cutT"]) +
