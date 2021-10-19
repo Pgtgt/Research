@@ -28,6 +28,7 @@ app_dialog_file = QtWidgets.QApplication(sys.argv)
 
 # 初期ディレクトリ取得
 
+
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
     choose folder path by Explore
@@ -73,6 +74,7 @@ def OSAcsvlam_In(filepath):  # lam-IのOSA信号(35行目から)をよむ
     df_data = pd.read_csv(filepath, skiprows=3, header=None)
     return df_data
 
+
 """findallについて
 https://niwakomablog.com/python-number-extract/#:~:text=%E4%BD%BF%E3%81%84%E6%96%B9&text=re.sub()%E3%81%AF%E3%80%81%E6%96%87%E5%AD%97,%E5%8F%96%E3%82%8A%E5%87%BA%E3%81%99%E3%81%93%E3%81%A8%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%BE%E3%81%99%E3%80%82
 """
@@ -82,6 +84,7 @@ https://niwakomablog.com/python-number-extract/#:~:text=%E4%BD%BF%E3%81%84%E6%96
 # まとめる対象のフォルダを選択し，ファイル名より情報をソートしたdf_sortを創る
 # =============================================================================
 folderpath = Dialog_Folder()
+print(folderpath)
 
 # ex)"filepath =  C:/Users/anonymous/Dropbox/pythoncode/OSAhappy/inter202109161816\OSA1_-10000pulseNo000301.csv
 filepaths = glob.glob(os.path.join(folderpath, '*.csv'))
@@ -97,24 +100,28 @@ https://techacademy.jp/magazine/22296
 """
 
 regex_No = re.compile("^\d+\d+\d+\d+\d+\d")
-list_No = [ int(regex_No.findall(filenames[i])[0]) for i in range(filelen)]
+list_No = [int(regex_No.findall(filenames[i])[0]) for i in range(filelen)]
 
 regex_subNo = re.compile("-+\w+_")
-list_subNo = [ int(regex_subNo.findall(filenames[i])[0][1:-1]) for i in range(filelen)]
+list_subNo = [int(regex_subNo.findall(filenames[i])[0][1:-1])
+              for i in range(filelen)]
 
 regex_title = re.compile("_\w+@")
-list_title = [regex_title.findall(filenames[i])[0][1:-1] for i in range(filelen)]
+list_title = [regex_title.findall(filenames[i])[0][1:-1]
+              for i in range(filelen)]
 
 regex_posi = re.compile("@"+".+"+"pls")
-list_posi = [int(regex_posi.findall(filenames[i])[0][1:-3]) for i in range(filelen)]
+list_posi = [int(regex_posi.findall(filenames[i])[0][1:-3])
+             for i in range(filelen)]
 
 sortlist = [filenames, list_title, list_No, list_subNo, list_posi]
 
-df_sort = pd.DataFrame(sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
+df_sort = pd.DataFrame(
+    sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
 
 
 df_sort.columns = df_sort.loc["NAME"].values.tolist()
-df_sort = df_sort.sort_index(axis = "columns")
+df_sort = df_sort.sort_index(axis="columns")
 
 # =============================================================================
 # df_sortの順番に従い実際にcsvファイルの情報を取り込んだdf_wholedataを創る
@@ -133,12 +140,12 @@ df_wholedata = pd.concat([df_index_freq, df_intensities], axis=1)
 df_wholedata.loc[28:] = df_wholedata.loc[28:].astype(float)
 df_wholedata = df_wholedata.set_index(0)
 df_wholedata.columns = df_sort.loc["NAME"].values.tolist()
-df_wholedata = df_wholedata.sort_index(axis = "columns")
+df_wholedata = df_wholedata.sort_index(axis="columns")
 
 # =============================================================================
 # １つのＸＬＳＸフォルダにdf_wholedata, dfsortframe _sortedを保存する．
 # =============================================================================
-XLSXpath = os.path.join( os.path.dirname(folderpath), "CSV_matome.xlsx")
+XLSXpath = os.path.join(os.path.dirname(folderpath), "CSV_matome.xlsx")
 
 with pd.ExcelWriter(XLSXpath,) as writer:
     df_wholedata.to_excel(writer, sheet_name="wholedata",)
