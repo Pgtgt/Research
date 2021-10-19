@@ -54,9 +54,9 @@ LIST_HYPERPARAMS = (
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
 
-        dict(cutT=0.1e-12, cutwidth=10e-12, expnum=14),  # Goo
-            dict(cutT=0.5e-12, cutwidth=10e-12, expnum=14),  # Goo
-                dict(cutT=1e-12, cutwidth=10e-12, expnum=14),  # Goo
+    dict(cutT=0.1e-12, cutwidth=10e-12, expnum=14),  # Goo
+    dict(cutT=0.5e-12, cutwidth=10e-12, expnum=14),  # Goo
+    dict(cutT=1e-12, cutwidth=10e-12, expnum=14),  # Goo
     dict(cutT=1.3e-12, cutwidth=10e-12, expnum=14),  # Goo
     dict(cutT=1.6e-12, cutwidth=10e-12, expnum=14),  # Goo
     dict(cutT=2e-12, cutwidth=10e-12, expnum=14),  # Goo
