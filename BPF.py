@@ -48,10 +48,30 @@ LIST_HYPERPARAMS = (
     # dict(cutT=6e-11, cutwidth=1e-10, expnum=14),
     # dict(cutT=6e-11, cutwidth=1e-9, expnum=14),
     # dict(cutT=6e-11, cutwidth=1e-8, expnum=14),
-    # dict(cutT=6e-11, cutwidth=1e-7, expnum=14),
-    dict(cutT=1e-10, cutwidth=1e-13, expnum=14),  # Goo
-    dict(cutT=1e-10, cutwidth=1e-12, expnum=14),  # Goo
-    dict(cutT=1e-10, cutwidth=1e-11, expnum=14),  # こっちのほうがいいかも　局所的にみると
+    # dict(cutT=10e-12, cutwidth=2e-14, expnum=14),  # Goo
+
+    # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
+
+        dict(cutT=0.1e-12, cutwidth=10e-12, expnum=14),  # Goo
+            dict(cutT=0.5e-12, cutwidth=10e-12, expnum=14),  # Goo
+                dict(cutT=1e-12, cutwidth=10e-12, expnum=14),  # Goo
+    dict(cutT=1.3e-12, cutwidth=10e-12, expnum=14),  # Goo
+    dict(cutT=1.6e-12, cutwidth=10e-12, expnum=14),  # Goo
+    dict(cutT=2e-12, cutwidth=10e-12, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=12e-12, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=14e-12, expnum=14),  # Goo
+
+
+    # dict(cutT=10e-12, cutwidth=15e-12, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=20e-12, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=22e-12, expnum=14),  # Goo
+    # dict(cutT=10e-12, cutwidth=24e-12, expnum=14),  # Goo
+
+    # dict(cutT=10e-12, cutwidth=40e-12, expnum=14),  # Goo
+    # dict(cutT=1e-10, cutwidth=1e-12, expnum=14),  # Goo
+    # dict(cutT=1e-10, cutwidth=1e-11, expnum=14),  # こっちのほうがいいかも　局所的にみると
     # dict(cutT=6e-12, cutwidth=1e-10, expnum=14),
     # dict(cutT=6e-12, cutwidth=1e-9, expnum=14),
     # dict(cutT=6e-12, cutwidth=1e-8, expnum=14),
@@ -192,7 +212,7 @@ class AbsoluteDistance():
         # =============================================================================
         #
         T, FFt, FFt_abs_amp = self.FFT(F, I)
-        plt.plot(T, FFt_abs_amp)
+        # plt.plot(T, FFt_abs_amp)
         delta_T = (1.0/dF)/(SampNum_inter-1)
 
         # =============================================================================
@@ -206,10 +226,10 @@ class AbsoluteDistance():
         F2_abs = np.abs(F2)
         # 振幅をもとの信号に揃える
         F2_abs_amp = F2_abs / SampNum_inter * 2  # 交流成分はデータ数で割って2倍
-        plt.plot(T, F2_abs_amp)
-        plt.xlim(-300e-12, 300e-12)
-        plt.ylim(-0.2e-7, 0.2e-6)
-        plt.show()
+        # plt.plot(T, F2_abs_amp)
+        # plt.xlim(-300e-12, 300e-12)
+        # plt.ylim(-0.2e-7, 0.2e-6)
+        # plt.show()
         # =============================================================================
         # Filtering:   F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
         #   ====>  F3(T)=C_2/2 exp(j*phi(T) )
@@ -223,7 +243,7 @@ class AbsoluteDistance():
             F3[((removeT[0] < T) & (T < removeT[1]))] = 0  # removeT間は0にする
 
         peak = np.argmax(F2_abs_amp)
-        print(str(T[peak]))
+        # print(str(T[peak]))
         F3[((T < T[peak]-cutwidth/2) | (T[peak]+cutwidth/2 < T))] = 0  # 所望のピークだけのこす
 
         # IFFT   F3(T)=C_2/2 exp(j*phi(T) )  ====>  I(f)=C_2/2 exp(j*phi(f) )
@@ -325,7 +345,7 @@ for idict_Params in LIST_HYPERPARAMS:
     #　matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない
     dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults")
     if os.path.exists(dir_Ana) == False:
-        os.path.mkdir(dir_Ana)
+        os.makedirs(dir_Ana)
     else:
         pass
 
@@ -344,17 +364,16 @@ for idict_Params in LIST_HYPERPARAMS:
     # 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
     # =============================================================================
 
-    plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
-                df_resultParams.loc["path_diff", :], s=2)
+    title="cutT="+str(idict_Params["cutT"]) +  "\n"+"cutwidth="+str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"])
+    fig=plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
+                df_resultParams.loc["path_diff", :], s=2,label = title)
 
     # plt.ylim(0.005, 0.01)
-    plt.title("cutT="+str(idict_Params["cutT"]) +
-              "\n"+"cutwidth="+str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"]))
-    plt.xlim(-20000, 20000)
+    plt.title(title)
+    # plt.xlim(-20000, 20000)
     # plt.ylim(0.035, 0.055)
     plt.show()
-    # plt.ylim(0.0035,0.006)
-
+    plt.ylim(0.000,0.008)
 
 """
 """
