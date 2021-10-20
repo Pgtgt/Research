@@ -85,7 +85,7 @@ freq = df_wholedata.loc["[TRACE DATA]":].iloc[1:].astype(float).index * 1e12
 # =============================================================================
 
 """推定後パラメータを格納用のdfを設定"""
-df_fit = pd.DataFrame(index=["A", "mu:f_center", "theta_rad", "sigma",
+df_fit = pd.DataFrame(index=["k","A", "mu:f_center", "theta_rad", "sigma",
                       "r2", "n_air", "d(m/groove)"], columns=df_intensities.columns)
 
 
@@ -120,7 +120,11 @@ for dataname in df_intensities.columns:
         tss = np.sum((df_intensities[dataname]-np.mean(df_intensities[dataname]))**2)
         r2 = 1 - (rss / tss)
 
+        """k"""
+        k = 1/ (n_air * (1 + np.cos(theta_rad)))
+
         """結果をdf_fitへ格納"""
+        df_fit.loc["k", dataname] = k
         df_fit.loc["A", dataname], df_fit.loc["mu:f_center",
                                               dataname], df_fit.loc["sigma", dataname] = popt
         df_fit.loc["theta_rad", dataname] = theta_rad
