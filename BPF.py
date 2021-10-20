@@ -54,12 +54,191 @@ LIST_HYPERPARAMS = (
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
 
-    dict(cutT=0.1e-12, cutwidth=10e-12, expnum=14),  # Goo
-    dict(cutT=0.5e-12, cutwidth=10e-12, expnum=14),  # Goo
-    dict(cutT=1e-12, cutwidth=10e-12, expnum=14),  # Goo
-    dict(cutT=1.3e-12, cutwidth=10e-12, expnum=14),  # Goo
-    dict(cutT=1.6e-12, cutwidth=10e-12, expnum=14),  # Goo
-    dict(cutT=2e-12, cutwidth=10e-12, expnum=14),  # Goo
+
+    dict(cutT=12e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=1.6e-12, expnum=15),  # Goo
+
+    dict(cutT=12e-12, cutwidth=3.2e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=3.2e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=3.2e-12, expnum=15),
+    dict(cutT=15e-12, cutwidth=3.2e-12, expnum=15),
+    dict(cutT=16e-12, cutwidth=3.2e-12, expnum=15),
+    dict(cutT=17e-12, cutwidth=3.2e-12, expnum=15),
+    dict(cutT=18e-12, cutwidth=3.2e-12, expnum=15),
+    dict(cutT=19e-12, cutwidth=3.2e-12, expnum=15),
+    dict(cutT=20e-12, cutwidth=3.2e-12, expnum=15),
+
+    dict(cutT=12e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=13e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=14e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=15e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=16e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=17e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=18e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=19e-12, cutwidth=4.8e-12, expnum=15),
+    dict(cutT=20e-12, cutwidth=4.8e-12, expnum=15),
+
+
+    dict(cutT=12e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=6.4e-12, expnum=15),  # Goo
+
+
+    dict(cutT=12e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    dict(cutT=12e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=9.6e-12, expnum=15),  # Goo
+
+
+    dict(cutT=12e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=10.2e-12, expnum=15),  # Goo
+
+    dict(cutT=12e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=11.8e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    dict(cutT=12e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=13.4e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    dict(cutT=12e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=15e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    dict(cutT=12e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=13e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=14e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=15e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=16e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=17e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=18e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=19e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    dict(cutT=20e-12, cutwidth=16.6e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    # dict(cutT=12e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=18.2e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    # dict(cutT=12e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=20e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+
+    # dict(cutT=12e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=22e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    # dict(cutT=12e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=24e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    # dict(cutT=12e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=26e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    # dict(cutT=12e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=28e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
+    # dict(cutT=12e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=13e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=14e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=15e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=16e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=17e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=18e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=19e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+    # dict(cutT=20e-12, cutwidth=30e-12, expnum=15),  # Goodict(cutT=16e-12, cutwidth=8e-12, expnum=15),  # Goo
+
     # dict(cutT=10e-12, cutwidth=12e-12, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=14e-12, expnum=14),  # Goo
 
@@ -367,13 +546,13 @@ for idict_Params in LIST_HYPERPARAMS:
     title="cutT="+str(idict_Params["cutT"]) +  "\n"+"cutwidth="+str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"])
     fig=plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
                 df_resultParams.loc["path_diff", :], s=2,label = title)
-
+    plt.ylim(0.003,0.020)
     # plt.ylim(0.005, 0.01)
     plt.title(title)
     # plt.xlim(-20000, 20000)
     # plt.ylim(0.035, 0.055)
     plt.show()
-    plt.ylim(0.000,0.008)
+
 
 """
 """
