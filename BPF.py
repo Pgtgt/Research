@@ -260,6 +260,7 @@ LIST_HYPERPARAMS = (
 
 
 n_air = ref_index.edlen(wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+K=0.741244259
 
 
 def Dialog_File(rootpath=r"C:", caption="choise"):
