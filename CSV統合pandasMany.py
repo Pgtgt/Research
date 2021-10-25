@@ -29,7 +29,7 @@ app_dialog_file = QtWidgets.QApplication(sys.argv)
 # 初期ディレクトリ取得
 
 
-def Dialog_File(rootpath=r"C:", caption="choise"):
+def Dialog_File(rootpath=r"C:\Users\wsxhi\Dropbox\DATAz-axis_try_5th", caption="choise"):
     """
     choose folder path by Explore
 
@@ -52,7 +52,7 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
     return filepath[0]
 
 
-def Dialog_Folder(rootpath=r"C:", caption="choise"):
+def Dialog_Folder(rootpath=r"C:\Users\wsxhi\Dropbox\DATAz-axis_try_5th", caption="choise"):
     """
     choose file path by Explore
 
