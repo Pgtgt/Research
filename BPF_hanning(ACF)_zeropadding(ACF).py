@@ -22,28 +22,34 @@ import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
 from scipy.fftpack import fft, fftfreq
-# OPTIMIZE:tunig
-# =============================================================================
-# param tuning
-# 最適地20210905 +1-ref
-# CUT_T = 15e-12
-# CUT_WIDTH = 0.00001e-12# 0.001 0.01もかわらず
-# EXPNUM = 14
-# 最適地　inter 20210925
-# CUT_T = 8e-12  # 大きいほど，o付近をつぶ(光源の影響)
-# CUT_WIDTH = 4e-13
-# =============================================================================
 
-PAD_EXP = 4
 n_air = ref_index.edlen(wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
-K = 0.741244259
+K = 0.741228073832589
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
 LIST_HYPERPARAMS = (
+    # @ exp13,pad4
+    #     BPF_method.delta_T
+    # Out[26]: 8.333263889468021e-13
 
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
-    dict(cutT=3.27e-11, cutwidth=0.1e-12, expnum=13),  # Goo
+    dict(cutT=2e-12, cutwidth=0.001e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
 
     # dict(cutT=12e-12, cutwidth=0.1e-12, expnum=13),  # Goo
     # dict(cutT=12e-12, cutwidth=0.2e-12, expnum=13),  # Goo
@@ -160,7 +166,7 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, removeT=[None, None]):
+    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None]):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
         結果が欲しいときは'self.path_diff'とかで呼び出す
@@ -176,8 +182,6 @@ class AbsoluteDistance():
             None
 
         """
-        cutT, cutwidth, expnum = cutT, cutwidth, expnum
-
         """補間 I(f_uneq) => I(f_euneq)"""
         self.F_inter, self.I_inter, self.SampNum_inter, self.dF = self.Inter(F_unequal, I_unequal, expnum)
 
@@ -187,12 +191,18 @@ class AbsoluteDistance():
         self.I_han = self.I_inter * hanning_win
 
         """zero padding (サンプリング数が不十分であり，FFT周波数分解能が不足しているため)"""
-        len_pad = self.SampNum_inter*pow(2, PAD_EXP)
+        len_pad = self.SampNum_inter*pow(2, pad_exp)
         self.I_han_pad = self.zero_padding(self.I_han, len_pad)
         self.F_pad = np.linspace(self.F_inter[0], self.F_inter[0]+(len_pad)*self.dF, len_pad+1)[:-1]
         """FFT:  I(f) C_1 + C_2*cos(phi(f) ) ====>   FFt(T)=C_1 + C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))"""
         self.T, self.FFt, self.FFt_abs_amp = self.FFT(self.F_pad, self.I_han_pad)
         self.FFt, self.FFt_abs_amp = self.FFt * acf_han, self.FFt_abs_amp * acf_han
+
+        # plt.plot(self.T, self.FFt_abs_amp)
+        # plt.xlim(0, 30e-12)
+
+        # # plt.ylim(-0.2e-7, 0.2e-6)
+        # plt.show()
         # plt.plot(T, FFt_abs_amp)
         self.delta_T = (1.0/self.dF)/(self.SampNum_inter-1)
 
@@ -242,8 +252,10 @@ class AbsoluteDistance():
 
 
 # =============================================================================
-# 分析用データをさがす
+# 分析準備
+# 分析用データを取得．　結果保存用dfを作成，計算用インスタンスの作成
 # =============================================================================
+"""CSVをまとめたxlsxを選択し，分析用データを得る"""
 print("CSVをまとめたxlsxを選択")
 matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")
 
@@ -256,10 +268,7 @@ F_uneq = df_wholedata.index[28:].astype(float).values * 1e12
 # https://qiita.com/ShoheiKojima/items/30ee0925472b7b3e5d5c
 names_rawdata = df_sort.loc["NAME", :].to_list()
 
-# =============================================================================
-# 計算用インスタンスBPF_method と結果格納データフレームdf_resultParams df_phiの準備
-# =============================================================================
-
+"""計算用インスタンスBPF_method と結果格納データフレームdf_resultParams df_phiの準備"""
 
 dict_instance = dict()
 BPF_method = AbsoluteDistance()
@@ -270,7 +279,7 @@ df_phi = pd.DataFrame(columns=names_rawdata)
 
 
 # =============================================================================
-# LIST_HYPERPARAMSのデータを適用し，分析を回す．
+# LIST_HYPERPARAMSのハイパーパラメータを適用し，*1分析・計算．*2データ保存．*3プロット，*4特定範囲でのOPD線形性確認
 # =============================================================================
 
 for idict_Params in LIST_HYPERPARAMS:
@@ -279,13 +288,14 @@ for idict_Params in LIST_HYPERPARAMS:
     for i_name in names_rawdata:
 
         """
+        *1 分析・計算
         i番目のデータにたいし，分析を行って行く．
         その後ほしいパラメータをdf_resultParamsに追加していく
         """
         I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values*1e-3
         # LIST_HYPERPARAMS
         BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
-                                   cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"])
+                                   cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"], pad_exp=idict_Params["PAD_EXP"])
 
         df_resultParams.loc["Tpeak", i_name] = BPF_method.Tpeak
         df_resultParams.loc["a", i_name] = BPF_method.a
@@ -296,33 +306,29 @@ for idict_Params in LIST_HYPERPARAMS:
         # df_phi.loc[:, i_name] = BPF_method.phi
         print("\r"+i_name, end="")
 
-# =============================================================================
-#
-#     df_resultParams.loc["cutT", names_rawdata[0]] = BPF_method.cutT
-#     df_resultParams.loc["cutwidth", names_rawdata[0]] = BPF_method.cutwidth
-#     df_resultParams.loc["expnum", names_rawdata[0]] = BPF_method.expnum
-#     df_resultParams.loc["pad_exp", names_rawdata[0]] = PAD_EXP
-#     df_resultParams.loc["k", names_rawdata[0]] = K
-#
-# =============================================================================
-    # df_phi.index = BPF_method.F
+    df_resultParams.loc["cutT", names_rawdata[0]], df_resultParams.loc["cutwidth", names_rawdata[0]], df_resultParams.loc["expnum", names_rawdata[0]], df_resultParams.loc["pad_exp", names_rawdata[0]], df_resultParams.loc["k",
+                                                                                                                                                                                                                             names_rawdata[0]] = idict_Params["cutT"], idict_Params["cutwidth"], idict_Params["expnum"], idict_Params["pad_exp"], K = idict_Params["cutT"], idict_Params["cutwidth"], idict_Params["expnum"], idict_Params["PAD_EXP"], K
+    """
+    *4 特定範囲内でのOPD線形性R2_OPDを確認．
+    """
+    judgerange = dict(start="000052-0_OSA1@-18000pls", end="000069-0_OSA1@-1000pls")
 
-    # =============================================================================
-    # データ保存手続き
-    # =============================================================================
+    y = df_resultParams.loc["path_diff", judgerange["start"]:judgerange["end"]].astype(float)
+    x = df_sort.loc["Posi_pls", judgerange["start"]:judgerange["end"]].astype(int)
+    dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
+    R2_OPD = metrics.r2_score(y, dydx * x + yc)
 
-    # df_resultParamsをdf_resultParamsOptimized(Dataframe)に変換・成型
-    # df_resultParamsOptimized = pd.DataFrame.from_dict(df_resultParams).T
-    # df_resultParamsOptimized.columns = names_rawdata
-
-    #　matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない
+    """
+    *2 データ保存
+    """
+    """matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない"""
     dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults")
     if os.path.exists(dir_Ana) == False:
         os.makedirs(dir_Ana)
     else:
         pass
 
-    name_file_AnaResult = "Ana"+"cutT" + \
+    name_file_AnaResult = "R2_OPD"+str(R2_OPD)+"cutT" + \
         str(idict_Params["cutT"]) + "_"+"cutwidth"+str(idict_Params["cutwidth"]
                                                        )+"_"+"expnum"+str(idict_Params["expnum"])+".xlsx"
     path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
@@ -332,15 +338,16 @@ for idict_Params in LIST_HYPERPARAMS:
     # df_F_phi_dev8 = df_F_phi[::JUMP_FREQ]
     # df_F_phi_dev8.to_excel("f_F_phi_dev8.xlsx")
 
-    # =============================================================================
-    # 位置測定の結果をサンプリングナンバー順にプロット inlineがおすすめ
-    # =============================================================================
+    """
+    *3 プロット
+    プロット位置測定の結果をサンプリングナンバー順に inlineがおすすめ
+    """
 
     title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + \
         str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"])
     fig = plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
                       df_resultParams.loc["path_diff", :], s=1, label=title)
-    # plt.ylim(0.003,0.020)
+    plt.xlim(-20000, 0)
     # plt.ylim(0.005, 0.01)
     plt.title(title)
     plt.show()
