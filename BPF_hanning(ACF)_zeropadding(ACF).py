@@ -23,8 +23,9 @@ import matplotlib.pyplot as plt
 import ref_index
 from scipy.fftpack import fft, fftfreq
 
-n_air = ref_index.edlen(wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
-K = 0.741228073832589
+n_air = ref_index.edlen(
+    wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+K = 0.742387766
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
 LIST_HYPERPARAMS = (
     # @ exp13,pad4
@@ -34,12 +35,37 @@ LIST_HYPERPARAMS = (
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
-    dict(cutT=2e-12, cutwidth=0.001e-12, expnum=13, PAD_EXP=4),  # Goo
-    dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
-    dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
-    dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
-    dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
+
+    # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+
+
     dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),
+    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),
+    # dict(cutT=2e-12, cutwidth=0.6e-12, expnum=13, PAD_EXP=4),  # Goo
+    # # dict(cutT=2e-12, cutwidth=0.3e-12, expnum=12, PAD_EXP=5),
+    # # dict(cutT=2e-12, cutwidth=0.3e-12, expnum=13, PAD_EXP=5),
+    # dict(cutT=2e-12, cutwidth=0.4e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=1e-12, expnum=12, PAD_EXP=5),
+    # dict(cutT=2e-12, cutwidth=1e-12, expnum=13, PAD_EXP=5),
+
+    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),
+    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),
+    # dict(cutT=2e-12, cutwidth=0.8e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=1.4e-12, expnum=13, PAD_EXP=4),  # Goo
+
+
+    # damedict(cutT=2e-12, cutwidth=4e-12, expnum=13, PAD_EXP=4),  # Goo
+
+    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.3e-12, expnum=13, PAD_EXP=5),  #
+    # dict(cutT=2e-12, cutwidth=1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # Goodict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=5e-12, expnum=13, PAD_EXP=4),
+    # dict(cutT=2e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
@@ -145,7 +171,8 @@ class AbsoluteDistance():
     def zero_padding(self, data, len_pad):
         pad = np.zeros(len_pad-len(data))
         data_pad = np.concatenate([data, pad])
-        acf = (sum(np.abs(data)) / len(data)) / (sum(np.abs(data_pad)) / len(data_pad))
+        acf = (sum(np.abs(data)) / len(data)) / \
+            (sum(np.abs(data_pad)) / len(data_pad))
         return data_pad * acf
 
     def wrappedphase(self, e):
@@ -183,19 +210,23 @@ class AbsoluteDistance():
 
         """
         """補間 I(f_uneq) => I(f_euneq)"""
-        self.F_inter, self.I_inter, self.SampNum_inter, self.dF = self.Inter(F_unequal, I_unequal, expnum)
+        self.F_inter, self.I_inter, self.SampNum_inter, self.dF = self.Inter(
+            F_unequal, I_unequal, expnum)
 
         """window (F,Iが非周期信号であるため)"""
         hanning_win = np.hanning(self.SampNum_inter)
-        acf_han = 1/(sum(hanning_win)/self.SampNum_inter)  # FFT後の数値に掛ければOKの補正係数
+        # FFT後の数値に掛ければOKの補正係数
+        acf_han = 1/(sum(hanning_win)/self.SampNum_inter)
         self.I_han = self.I_inter * hanning_win
 
         """zero padding (サンプリング数が不十分であり，FFT周波数分解能が不足しているため)"""
         len_pad = self.SampNum_inter*pow(2, pad_exp)
         self.I_han_pad = self.zero_padding(self.I_han, len_pad)
-        self.F_pad = np.linspace(self.F_inter[0], self.F_inter[0]+(len_pad)*self.dF, len_pad+1)[:-1]
+        self.F_pad = np.linspace(
+            self.F_inter[0], self.F_inter[0]+(len_pad)*self.dF, len_pad+1)[:-1]
         """FFT:  I(f) C_1 + C_2*cos(phi(f) ) ====>   FFt(T)=C_1 + C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))"""
-        self.T, self.FFt, self.FFt_abs_amp = self.FFT(self.F_pad, self.I_han_pad)
+        self.T, self.FFt, self.FFt_abs_amp = self.FFT(
+            self.F_pad, self.I_han_pad)
         self.FFt, self.FFt_abs_amp = self.FFt * acf_han, self.FFt_abs_amp * acf_han
 
         # plt.plot(self.T, self.FFt_abs_amp)
@@ -226,10 +257,12 @@ class AbsoluteDistance():
         if (removeT[0] == None) or (removeT[1] == None):
             pass
         else:
-            self.F3[((removeT[0] < self.T) & (self.T < removeT[1]))] = 0  # removeT間は0にする
+            self.F3[((removeT[0] < self.T) & (self.T < removeT[1]))
+                    ] = 0  # removeT間は0にする
 
         self.Tpeak = self.T[np.argmax(self.F2_abs_amp)]  # peak T(>0)
-        self.F3[((self.T < self.Tpeak-cutwidth/2) | (self.Tpeak+cutwidth/2 < self.T))] = 0  # 所望のピークだけのこす
+        self.F3[((self.T < self.Tpeak-cutwidth/2) |
+                 (self.Tpeak+cutwidth/2 < self.T))] = 0  # 所望のピークだけのこす
 
         """IFFT   F3(T)=C_2/2 exp(j*phi(T) )  ====>  I(f)=C_2/2 exp(j*phi(f) )"""
         self.F3_ifft = np.fft.ifft(self.F3)  # IFFT  C_2/2 exp(j*phi(f) )
@@ -241,7 +274,8 @@ class AbsoluteDistance():
         # wrap_abs=np.abs(wrap)
 
         self.phi = np.unwrap(p=self.wrap * 2)/2
-        self.a, self.b = np.polyfit(self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
+        self.a, self.b = np.polyfit(
+            self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi, self.a * self.F_pad + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
@@ -259,7 +293,8 @@ class AbsoluteDistance():
 print("CSVをまとめたxlsxを選択")
 matomexlsxpath = Dialog_File(caption="matome XLSXえらぶ")
 
-df_wholedata = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="wholedata")
+df_wholedata = pd.read_excel(
+    matomexlsxpath, index_col=0, sheet_name="wholedata")
 df_sort = pd.read_excel(matomexlsxpath, index_col=0, sheet_name="sort")
 
 F_uneq = df_wholedata.index[28:].astype(float).values * 1e12
@@ -311,12 +346,15 @@ for idict_Params in LIST_HYPERPARAMS:
     """
     *4 特定範囲内でのOPD線形性R2_OPDを確認．
     """
-    judgerange = dict(start="000052-0_OSA1@-18000pls", end="000069-0_OSA1@-1000pls")
+    # judgerange = dict(start="000052-0_OSA1@-18000pls",
+    #                   end="000069-0_OSA1@-1000pls")
 
-    y = df_resultParams.loc["path_diff", judgerange["start"]:judgerange["end"]].astype(float)
-    x = df_sort.loc["Posi_pls", judgerange["start"]:judgerange["end"]].astype(int)
-    dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
-    R2_OPD = metrics.r2_score(y, dydx * x + yc)
+    # y = df_resultParams.loc["path_diff",
+    #                         judgerange["start"]:judgerange["end"]].astype(float)
+    # x = df_sort.loc["Posi_pls", judgerange["start"]
+    #     :judgerange["end"]].astype(int)
+    # dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
+    R2_OPD = 2
 
     """
     *2 データ保存
@@ -343,18 +381,15 @@ for idict_Params in LIST_HYPERPARAMS:
     プロット位置測定の結果をサンプリングナンバー順に inlineがおすすめ
     """
 
-    title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + \
-        str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"])
-    fig = plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
-                      df_resultParams.loc["path_diff", :], s=1, label=title)
-    plt.xlim(-20000, 0)
+    title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + str(idict_Params["cutwidth"]) + \
+        "\n" + "expnum=" + \
+            str(idict_Params["expnum"]) + str(idict_Params["PAD_EXP"])
+    fig = plt.plot(df_sort.loc["Posi_pls", :].astype(int),
+                   df_resultParams.loc["path_diff", :],  label=title)
+    plt.xlim(-30000, 30000)
     # plt.ylim(0.005, 0.01)
     plt.title(title)
     plt.show()
 
     # plt.xlim(-20000, 20000)
     # plt.ylim(0.035, 0.055)
-
-
-"""
-"""
