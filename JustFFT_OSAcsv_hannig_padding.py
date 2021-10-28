@@ -8,32 +8,29 @@ import os
 from plotly.subplots import make_subplots
 import plotly
 import plotly.graph_objects as go
-import plotly.express as px
 import plotly.io as pio
 from scipy.fftpack import fft, fftfreq
 from scipy import interpolate
+from PyQt5 import QtWidgets
+import pandas as pd
+
+EXP_NUM = 13
+PAD_EXP = 4
+
+app = QtWidgets.QApplication(sys.argv)
 
 
 def Dialog_File(rootpath_init=r"C:"):
     """
-
-
     Args:
-        rootpath_init (TYPE, optional): DESCRIPTION. Defaults to r"C:".
+        rootpath_init (TYPE, optional): Initial Path. Defaults to r"C:".
 
     Returns:
-        TYPE: DESCRIPTION.
+        TYPE: Path of a File.
 
     """
-
-    """
-    引数:初期ディレクトリ
-    戻り値：ファイルパス
-    """
-    from PyQt5 import QtWidgets
-    # 実行ディレクトリ取得D
     rootpath = rootpath_init
-    app_dialog_file = QtWidgets.QApplication(sys.argv)
+
     # ディレクトリ選択ダイアログを表示-
     filepath = QtWidgets.QFileDialog.getOpenFileName(parent=None, caption="rootpath", directory=rootpath)
 
@@ -43,22 +40,19 @@ def Dialog_File(rootpath_init=r"C:"):
 
 def Inter(x, y, expnum):
     """
-
-
+    spline curve fitting
     Args:
-        x (TYPE): DESCRIPTION.
-        y (TYPE): DESCRIPTION.
-        expnum (TYPE): DESCRIPTION.
+        x (array of float(int)): X (unequal).
+        y (array of float(int)): Y (unequal).
+        expnum (int): Ninter = pow(2, expnum).
 
     Returns:
-        xinter (TYPE): DESCRIPTION.
-        yinter (TYPE): DESCRIPTION.
-        Ninter (TYPE): DESCRIPTION.
-        dx (TYPE): DESCRIPTION.
+        xinter (array of float): X (interpolated).
+        yinter (array of float): Y (interpolated).
+        Ninter (int): Ninter = pow(2, expnum) = len(xinter) = len(yinter)
+        dx (float): xinter interval (xinter[i+1] - xinter[i]).
 
     """
-    # x,yは信号 expnumはデータ分割数＝2**expnum/ 補間後信号return xinter,yinter,分割数Ninter,分割幅dx
-
     xinterstart = min(x)*(1+sys.float_info.epsilon)
     xinterend = max(x)*(1-sys.float_info.epsilon)
     Ninter = 2**expnum
@@ -66,12 +60,12 @@ def Inter(x, y, expnum):
 
     SpFun = interpolate.interp1d(x, y, kind="cubic")
     yinter = SpFun(xinter)
-    dx = (xinterend-xinterstart)/(Ninter-1)  # サンプリング間隔
+    dx = (xinterend-xinterstart)/(Ninter-1)
     return xinter, yinter, Ninter, dx
 
 
 def OSAcsvfre_In(file):  # fre-IのOSA信号(35行目から)をよむ　また，単位をTHz =>Hz, mW => Wへ修正
-    import pandas as pd
+
     wholedata = pd.read_csv(file, header=None, skiprows=34).values
     Fdata = np.flipud(wholedata[:, 0].ravel())*1e12  # 小さい周波数から格納
     Idata = np.flipud(wholedata[:, 1].ravel())*1e-3
@@ -93,22 +87,46 @@ def FFT(x, y):
     return freq, FF, FF_abs_amp
 
 
-path_file = Dialog_File()
-# file="F:\研究\Data20191018\W0166.CSV"
+def zero_padding(data, len_pad):
+    pad = np.zeros(len_pad-len(data))
+    data_pad = np.concatenate([data, pad])
+    acf = (sum(np.abs(data)) / len(data)) / (sum(np.abs(data_pad)) / len(data_pad))
+    return data_pad * acf
 
-# path_file=r"C:/Users/anonymous/Dropbox/pythoncode/OSAhappy/inter202109161816/OSA1_-50000pulse_No000588.csv"
-# Read CSV
+
+# =============================================================================
+# データ読み込み
+# 選択したOSAのCSVファイルの強度ー周波数部分のみ読み込み
+# =============================================================================
+path_file = Dialog_File()
 Fdata, Idata = OSAcsvfre_In(path_file)
 
-# 補間
-EXPNUM = 14
-F, I, Ninter, dF = Inter(x=Fdata, y=Idata, expnum=EXPNUM)
+# =============================================================================
+# データ処理．
+#   1．スプライン補間 (データ数Ninter = pow(2, exp_num))
+#   2．ハニング窓
+#   3．ゼロパディング (データ数 len_pad = Ninter*pow(2, pad_exp))
+#   4.FFT
+# =============================================================================
+"""1．スプライン補間"""
+F_inter, I_inter, Ninter, dF = Inter(x=Fdata, y=Idata, expnum=EXP_NUM)
+"""2．ハニング窓"""
+hanning_win = np.hanning(Ninter)
+acf_han = 1/(sum(hanning_win)/Ninter)  # FFT後の数値に掛ければOKの補正係数
+I_han = I_inter * hanning_win
 
-# FFTと
-T, FF, FF_abs_amp = FFT(F, I)
+"""3．ゼロパディング (データ数 Ninter*pow(2, pad_exp))"""
+len_pad = Ninter*pow(2, PAD_EXP)
+I_han_pad = zero_padding(I_han, len_pad)
+F_pad = np.linspace(F_inter[0], F_inter[0]+(len_pad)*dF, len_pad+1)[:-1]
+
+"""4.FFT"""
+T, FFt, FFt_abs_amp = FFT(F_pad, I_han_pad)
 
 
-# h = int(len(T)/2)
+# =============================================================================
+# Plot 該当CSVファイルがあったディレクトリにhtmlファイルにて保存
+# =============================================================================
 fig = make_subplots(rows=1, cols=2)
 
 fig.add_trace(
@@ -119,7 +137,7 @@ fig.add_trace(
 
 
 fig.add_trace(
-    go.Scatter(x=T, y=FF_abs_amp),
+    go.Scatter(x=T, y=FFt_abs_amp, name=("expnum:%d  pad_exp:%d" % (EXP_NUM, PAD_EXP))),
     row=1, col=2
 )
 
