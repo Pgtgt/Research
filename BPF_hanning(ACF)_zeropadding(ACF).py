@@ -22,8 +22,11 @@ import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
 from scipy.fftpack import fft, fftfreq
+from PyQt5 import QtWidgets
+app = QtWidgets.QApplication(sys.argv)
 
-n_air = ref_index.edlen(wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+n_air = ref_index.edlen(
+    wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
 
 
 K = 0.742387766
@@ -106,9 +109,9 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
     引数:初期ディレクトリ
     戻り値：ファイルパス
     """
-    from PyQt5 import QtWidgets
+    # from PyQt5 import QtWidgets
     # 実行ディレクトリ取得D
-    app_dialog_file = QtWidgets.QApplication(sys.argv)
+
     # ディレクトリ選択ダイアログを表示-
     filepath = QtWidgets.QFileDialog.getOpenFileName(
         parent=None, caption=caption, directory=rootpath)
@@ -122,10 +125,10 @@ def Dialog_Folder(rootpath=r"C:", caption="choise"):
     引数:初期ディレクトリ
     戻り値：フォルダ(ディレクトリ)パス
     """
-    from PyQt5 import QtWidgets
-    import sys
-    # ディレクトリ選択ダイアログを表示
-    app = QtWidgets.QApplication(sys.argv)
+    # from PyQt5 import QtWidgets
+    # import sys
+    # # ディレクトリ選択ダイアログを表示
+    # app = QtWidgets.QApplication(sys.argv)
     folderpath = QtWidgets.QFileDialog.getExistingDirectory(
         parent=None, caption=caption, directory=rootpath)
     return folderpath
@@ -408,7 +411,8 @@ for idict_Params in LIST_HYPERPARAMS:
     """
 
     title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + \
-        str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])
+        str(idict_Params["cutwidth"])+"\n"+"expnum=" + \
+        str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])
     fig = plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
                       df_resultParams.loc["path_diff", :], s=1, label=title)
     # plt.xlim(-20000, 0)
