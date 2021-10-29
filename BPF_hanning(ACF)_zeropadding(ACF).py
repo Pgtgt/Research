@@ -23,8 +23,9 @@ import matplotlib.pyplot as plt
 import ref_index
 from scipy.fftpack import fft, fftfreq
 
-n_air = ref_index.edlen(
-    wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+n_air = ref_index.edlen(wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+
+
 K = 0.742387766
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
 LIST_HYPERPARAMS = (
@@ -35,6 +36,25 @@ LIST_HYPERPARAMS = (
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
+
+    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo0
+    dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo1
+    dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo2
+    dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo3
+    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo4
+    dict(cutT=2e-12, cutwidth=1.5e-12, expnum=13, PAD_EXP=4),  # Goo5
+    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),  # Goo6
+    dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=5),  # Goo7
+    dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=5),  # Goo8
+    dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=5),  # Goo
+    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),  # Goo
+    dict(cutT=2e-12, cutwidth=1.5e-12, expnum=13, PAD_EXP=5),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo
+
     # dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
@@ -42,7 +62,6 @@ LIST_HYPERPARAMS = (
     # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
 
 
-    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),
     # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),
     # dict(cutT=2e-12, cutwidth=0.6e-12, expnum=13, PAD_EXP=4),  # Goo
@@ -340,12 +359,19 @@ for idict_Params in LIST_HYPERPARAMS:
         df_resultParams.loc["z", i_name] = BPF_method.path_diff * K
         # df_phi.loc[:, i_name] = BPF_method.phi
         print("\r"+i_name, end="")
-
+    print("\n")
+    print("\n")
     df_resultParams.loc["cutT", names_rawdata[0]], df_resultParams.loc["cutwidth", names_rawdata[0]], df_resultParams.loc["expnum", names_rawdata[0]], df_resultParams.loc["pad_exp", names_rawdata[0]], df_resultParams.loc["k",
                                                                                                                                                                                                                              names_rawdata[0]] = idict_Params["cutT"], idict_Params["cutwidth"], idict_Params["expnum"], idict_Params["pad_exp"], K = idict_Params["cutT"], idict_Params["cutwidth"], idict_Params["expnum"], idict_Params["PAD_EXP"], K
     """
     *4 特定範囲内でのOPD線形性R2_OPDを確認．
     """
+    # judgerange = dict(start="000052-0_OSA1@-18000pls", end="000069-0_OSA1@-1000pls")
+
+    # y = df_resultParams.loc["path_diff", judgerange["start"]:judgerange["end"]].astype(float)
+    # x = df_sort.loc["Posi_pls", judgerange["start"]:judgerange["end"]].astype(int)
+    # dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
+    # R2_OPD = metrics.r2_score(y, dydx * x + yc)
     # judgerange = dict(start="000052-0_OSA1@-18000pls",
     #                   end="000069-0_OSA1@-1000pls")
 
@@ -368,7 +394,7 @@ for idict_Params in LIST_HYPERPARAMS:
 
     name_file_AnaResult = "R2_OPD"+str(R2_OPD)+"cutT" + \
         str(idict_Params["cutT"]) + "_"+"cutwidth"+str(idict_Params["cutwidth"]
-                                                       )+"_"+"expnum"+str(idict_Params["expnum"])+".xlsx"
+                                                       )+"_"+"expnum"+str(idict_Params["expnum"]) + "pad"+str(idict_Params["PAD_EXP"]) + ".xlsx"
     path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
 
     df_resultParams.to_excel(path_AnaResult)
@@ -381,12 +407,11 @@ for idict_Params in LIST_HYPERPARAMS:
     プロット位置測定の結果をサンプリングナンバー順に inlineがおすすめ
     """
 
-    title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + str(idict_Params["cutwidth"]) + \
-        "\n" + "expnum=" + \
-            str(idict_Params["expnum"]) + str(idict_Params["PAD_EXP"])
-    fig = plt.plot(df_sort.loc["Posi_pls", :].astype(int),
-                   df_resultParams.loc["path_diff", :],  label=title)
-    plt.xlim(-30000, 30000)
+    title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + \
+        str(idict_Params["cutwidth"])+"\n"+"expnum="+str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])
+    fig = plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
+                      df_resultParams.loc["path_diff", :], s=1, label=title)
+    # plt.xlim(-20000, 0)
     # plt.ylim(0.005, 0.01)
     plt.title(title)
     plt.show()
