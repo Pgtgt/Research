@@ -27,80 +27,23 @@ app = QtWidgets.QApplication(sys.argv)
 
 n_air = ref_index.edlen(
     wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
+K = 0.742383644
 
+STAGE_RSN = 0.1e-6  # m/pls
 
-K = 0.742387766
 #  cut_T cutT = 6.6 p にて2mm以下が無理になる
 LIST_HYPERPARAMS = (
     # @ exp13,pad4
     #     BPF_method.delta_T
     # Out[26]: 8.333263889468021e-13
 
-    # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
-    # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
-    # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
-
-    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo0
-    dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo1
-    dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo2
-    dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo3
-    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo4
-    dict(cutT=2e-12, cutwidth=1.5e-12, expnum=13, PAD_EXP=4),  # Goo5
-    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),  # Goo6
-    dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=5),  # Goo7
-    dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=5),  # Goo8
-    dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=5),  # Goo
-    dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),  # Goo
-    dict(cutT=2e-12, cutwidth=1.5e-12, expnum=13, PAD_EXP=5),  # Goo
+    dict(cutT=3e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
     # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo
 
-    # dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
-
-    # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-
-
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),
-    # dict(cutT=2e-12, cutwidth=0.6e-12, expnum=13, PAD_EXP=4),  # Goo
-    # # dict(cutT=2e-12, cutwidth=0.3e-12, expnum=12, PAD_EXP=5),
-    # # dict(cutT=2e-12, cutwidth=0.3e-12, expnum=13, PAD_EXP=5),
-    # dict(cutT=2e-12, cutwidth=0.4e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=1e-12, expnum=12, PAD_EXP=5),
-    # dict(cutT=2e-12, cutwidth=1e-12, expnum=13, PAD_EXP=5),
-
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),
-    # dict(cutT=2e-12, cutwidth=0.8e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=1.4e-12, expnum=13, PAD_EXP=4),  # Goo
-
-
-    # damedict(cutT=2e-12, cutwidth=4e-12, expnum=13, PAD_EXP=4),  # Goo
-
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=12, PAD_EXP=5),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.3e-12, expnum=13, PAD_EXP=5),  #
-    # dict(cutT=2e-12, cutwidth=1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # Goodict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=5e-12, expnum=13, PAD_EXP=4),
-    # dict(cutT=2e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=4e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-
-    # dict(cutT=12e-12, cutwidth=0.1e-12, expnum=13),  # Goo
-    # dict(cutT=12e-12, cutwidth=0.2e-12, expnum=13),  # Goo
 )
 
 
@@ -331,7 +274,15 @@ dict_instance = dict()
 BPF_method = AbsoluteDistance()
 
 df_resultParams = pd.DataFrame(
-    index=["z", "path_diff", "Tpeak", "a", "b", "R2", "cutT", "cutwidth", "expnum", "pad_exp", "k"], columns=names_rawdata)
+    index=["path_diff", "Tpeak", "a", "b", "R2",
+           "cutT", "cutwidth", "expnum", "pad_exp", "k",
+           "stage_m", "stage_um", "z_m", "z_um"],
+    columns=names_rawdata)
+
+df_resultParams.loc["stage_m", :] = df_sort.loc["Posi_pls", :]*STAGE_RSN
+df_resultParams.loc["stage_um", :] = df_sort.loc["Posi_pls", :]*STAGE_RSN*1e6
+
+
 df_phi = pd.DataFrame(columns=names_rawdata)
 
 
@@ -359,7 +310,9 @@ for idict_Params in LIST_HYPERPARAMS:
         df_resultParams.loc["b", i_name] = BPF_method.b
         df_resultParams.loc["R2", i_name] = BPF_method.R2
         df_resultParams.loc["path_diff", i_name] = BPF_method.path_diff
-        df_resultParams.loc["z", i_name] = BPF_method.path_diff * K
+        df_resultParams.loc["z_m", i_name] = BPF_method.path_diff * K
+        df_resultParams.loc["z_um", i_name] = BPF_method.path_diff * K*1e6
+
         # df_phi.loc[:, i_name] = BPF_method.phi
         print("\r"+i_name, end="")
     print("\n")
@@ -383,7 +336,7 @@ for idict_Params in LIST_HYPERPARAMS:
     # x = df_sort.loc["Posi_pls", judgerange["start"]
     #     :judgerange["end"]].astype(int)
     # dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
-    R2_OPD = 2
+    # R2_OPD = 2
 
     """
     *2 データ保存
@@ -395,9 +348,9 @@ for idict_Params in LIST_HYPERPARAMS:
     else:
         pass
 
-    name_file_AnaResult = "R2_OPD"+str(R2_OPD)+"cutT" + \
-        str(idict_Params["cutT"]) + "_"+"cutwidth"+str(idict_Params["cutwidth"]
-                                                       )+"_"+"expnum"+str(idict_Params["expnum"]) + "pad"+str(idict_Params["PAD_EXP"]) + ".xlsx"
+    name_file_AnaResult = "cutT" + str(idict_Params["cutT"]) + "_" +\
+        "cutw"+str(idict_Params["cutwidth"])+"_" +\
+        "exp"+str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"]) + ".xlsx"
     path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
 
     df_resultParams.to_excel(path_AnaResult)
@@ -410,9 +363,9 @@ for idict_Params in LIST_HYPERPARAMS:
     プロット位置測定の結果をサンプリングナンバー順に inlineがおすすめ
     """
 
-    title = "cutT="+str(idict_Params["cutT"]) + "\n"+"cutwidth=" + \
-        str(idict_Params["cutwidth"])+"\n"+"expnum=" + \
-        str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])
+    title = "cutT="+str(idict_Params["cutT"]) + "\n" \
+        + "cutwidth=" + str(idict_Params["cutwidth"])+"\n" \
+        + "expnum=" + str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])
     fig = plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
                       df_resultParams.loc["path_diff", :], s=1, label=title)
     # plt.xlim(-20000, 0)
