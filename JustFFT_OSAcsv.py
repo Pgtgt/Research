@@ -2,17 +2,13 @@
 import numpy as np
 # import matplotlib.pyplot as plt
 import sys
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph as pg
 import os
 from plotly.subplots import make_subplots
 import plotly
 import plotly.graph_objects as go
-import plotly.express as px
-import plotly.io as pio
-from scipy.fftpack import fft, fftfreq
+from scipy.fftpack import fftfreq
 from scipy import interpolate
-
+import pandas as pd
 
 def Dialog_File(rootpath_init=r"C:"):
     """
@@ -71,7 +67,7 @@ def Inter(x, y, expnum):
 
 
 def OSAcsvfre_In(file):  # fre-IのOSA信号(35行目から)をよむ　また，単位をTHz =>Hz, mW => Wへ修正
-    import pandas as pd
+
     wholedata = pd.read_csv(file, header=None, skiprows=34).values
     Fdata = np.flipud(wholedata[:, 0].ravel())*1e12  # 小さい周波数から格納
     Idata = np.flipud(wholedata[:, 1].ravel())*1e-3
