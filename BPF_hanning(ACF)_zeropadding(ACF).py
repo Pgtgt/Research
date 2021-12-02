@@ -16,8 +16,6 @@ import os
 import math
 import sys
 import copy
-from icecream import ic
-# import copy
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
@@ -27,11 +25,9 @@ app = QtWidgets.QApplication(sys.argv)
 
 n_air = ref_index.edlen(
     wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
-K = 0.742383644
+K = 0.742383644 #TODO
 
-STAGE_RSN = 0.1e-6  # m/pls
-
-#  cut_T cutT = 6.6 p にて2mm以下が無理になる
+STAGE_RSN = 0.1e-6  # m/pls ステージの分解能
 LIST_HYPERPARAMS = (
     # @ exp13,pad4
     #     BPF_method.delta_T
@@ -304,7 +300,7 @@ df_phi = pd.DataFrame(columns=names_rawdata)
 
 
 # =============================================================================
-# LIST_HYPERPARAMSのハイパーパラメータを適用し，*1分析・計算．*2データ保存．*3プロット，*4特定範囲でのOPD線形性確認
+# LIST_HYPERPARAMSのハイパーパラメータを適用し，*1分析・計算．*2データ保存．*3プロット，
 # =============================================================================
 
 for idict_Params in LIST_HYPERPARAMS:
@@ -336,24 +332,7 @@ for idict_Params in LIST_HYPERPARAMS:
     print("\n")
     df_resultParams.loc["cutT", names_rawdata[0]], df_resultParams.loc["cutwidth", names_rawdata[0]], df_resultParams.loc["expnum", names_rawdata[0]], df_resultParams.loc["pad_exp", names_rawdata[0]], df_resultParams.loc["k",
                                                                                                                                                                                                                              names_rawdata[0]] = idict_Params["cutT"], idict_Params["cutwidth"], idict_Params["expnum"], idict_Params["pad_exp"], K = idict_Params["cutT"], idict_Params["cutwidth"], idict_Params["expnum"], idict_Params["PAD_EXP"], K
-    """
-    *4 特定範囲内でのOPD線形性R2_OPDを確認．
-    """
-    # judgerange = dict(start="000052-0_OSA1@-18000pls", end="000069-0_OSA1@-1000pls")
 
-    # y = df_resultParams.loc["path_diff", judgerange["start"]:judgerange["end"]].astype(float)
-    # x = df_sort.loc["Posi_pls", judgerange["start"]:judgerange["end"]].astype(int)
-    # dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
-    # R2_OPD = metrics.r2_score(y, dydx * x + yc)
-    # judgerange = dict(start="000052-0_OSA1@-18000pls",
-    #                   end="000069-0_OSA1@-1000pls")
-
-    # y = df_resultParams.loc["path_diff",
-    #                         judgerange["start"]:judgerange["end"]].astype(float)
-    # x = df_sort.loc["Posi_pls", judgerange["start"]
-    #     :judgerange["end"]].astype(int)
-    # dydx, yc = np.polyfit(x, y, 1)  # phi = a *F + bの1じ多項式近似
-    # R2_OPD = 2
 
     """
     *2 データ保存
