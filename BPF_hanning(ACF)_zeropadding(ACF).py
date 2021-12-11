@@ -5,6 +5,8 @@ Created on Fri Oct 15 02:11:54 2021
 @author: wsxhi
 https://rikei-fufu.com/2020/06/27/post-3237-python-fft/#index_id3
 https://watlab-blog.com/2019/04/20/window-correction/
+
+#!!! たくさんプロットされるため，inline plotがおすすめ．
 """
 
 # =============================================================================
@@ -34,7 +36,7 @@ LIST_HYPERPARAMS = (
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=3e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=35e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4),  # Goo
 
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
@@ -256,6 +258,7 @@ class AbsoluteDistance():
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
         plt.plot(self.F_pad, self.phi-(self.a*self.F_pad +self.b) )
         plt.title("liner error")
+        plt.show()
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi, self.a * self.F_pad + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
