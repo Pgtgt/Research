@@ -254,6 +254,8 @@ class AbsoluteDistance():
         self.phi = np.unwrap(p=self.wrap * 2)/2
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
+        plt.plot(self.F_pad, self.phi-(self.a*self.F_pad +self.b) )
+        plt.title("liner error")
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi, self.a * self.F_pad + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
