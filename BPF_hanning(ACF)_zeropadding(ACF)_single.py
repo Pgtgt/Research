@@ -17,7 +17,7 @@ import copy
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
-from scipy.fftpack import fft, fftfreq
+from scipy.fftpack import fftfreq
 from PyQt5 import QtWidgets
 app = QtWidgets.QApplication(sys.argv)
 
@@ -32,7 +32,7 @@ LIST_HYPERPARAMS = ( #TODO
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=3e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=35e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4),  # Goo
 
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
