@@ -2,14 +2,11 @@
 import numpy as np
 # import matplotlib.pyplot as plt
 import sys
-from pyqtgraph.Qt import QtGui, QtCore
-import pyqtgraph as pg
 import os
 from plotly.subplots import make_subplots
 import plotly
 import plotly.graph_objects as go
-import plotly.io as pio
-from scipy.fftpack import fft, fftfreq
+from scipy.fftpack import fftfreq
 from scipy import interpolate
 from PyQt5 import QtWidgets
 import pandas as pd
@@ -145,7 +142,7 @@ path_html = (os.path.splitext(path_file)[0])+".html"
 
 
 plotly.offline.plot(fig,
-                    auto_open=True,
+                    # auto_open=True,
                     )
 
 fig.write_html(path_html)
