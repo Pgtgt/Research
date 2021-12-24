@@ -21,7 +21,7 @@ import copy
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import ref_index
-from scipy.fftpack import fft, fftfreq
+from scipy.fftpack import fftfreq
 from PyQt5 import QtWidgets
 app = QtWidgets.QApplication(sys.argv)
 
@@ -36,7 +36,7 @@ LIST_HYPERPARAMS = (
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=35e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=10e-12, cutwidth=35e-12, expnum=13, PAD_EXP=4,ANA_FREQ_START=191.65e12,ANA_FREQ_END=191.75e12),  # Goo
 
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
@@ -173,7 +173,7 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None]):
+    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None], ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
         結果が欲しいときは'self.path_diff'とかで呼び出す
@@ -256,6 +256,11 @@ class AbsoluteDistance():
         self.phi = np.unwrap(p=self.wrap * 2)/2
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
+
+        """振動成分があるF_pad-phi領域のみを取り出して，　a, bを求めるように変更"""
+        self.F_pad, self.phi =self.F_pad[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)], self.phi[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)]
+        self.a, self.b = np.polyfit(
+            self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
         plt.plot(self.F_pad, self.phi-(self.a*self.F_pad +self.b) )
         plt.title("liner error")
         plt.show()
@@ -321,7 +326,7 @@ for idict_Params in LIST_HYPERPARAMS:
         I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values*1e-3
         # LIST_HYPERPARAMS
         BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
-                                   cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"], pad_exp=idict_Params["PAD_EXP"])
+                                   cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"], pad_exp=idict_Params["PAD_EXP"],ana_freq_start=idict_Params["ANA_FREQ_START"],ana_freq_end=idict_Params["ANA_FREQ_END"])
 
         df_resultParams.loc["Tpeak", i_name] = BPF_method.Tpeak
         df_resultParams.loc["a", i_name] = BPF_method.a
@@ -343,7 +348,7 @@ for idict_Params in LIST_HYPERPARAMS:
     *2 データ保存
     """
     """matomexlsxがあるディレクトリに，分析結果格納ディレクトリnew_dir = "AnaResults"を作る．既に存在していたら作らない"""
-    dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults")
+    dir_Ana = os.path.join(os.path.split(matomexlsxpath)[0], "AnaResults_F_pad_limit_Ver")
     if os.path.exists(dir_Ana) == False:
         os.makedirs(dir_Ana)
     else:

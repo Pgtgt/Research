@@ -32,7 +32,7 @@ LIST_HYPERPARAMS = ( #TODO
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=35e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=35e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4,ANA_FREQ_START=191.65e12,ANA_FREQ_END=191.75e12),  # Goo
 
     # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
     # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
@@ -154,7 +154,7 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None]):
+    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None], ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
         結果が欲しいときは'self.path_diff'とかで呼び出す
@@ -237,6 +237,12 @@ class AbsoluteDistance():
         self.phi = np.unwrap(p=self.wrap * 2)/2
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
+
+        """振動成分があるF_pad-phi領域のみを取り出して，　a, bを求めるように変更"""
+        self.F_pad, self.phi =self.F_pad[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)], self.phi[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)]
+        self.a, self.b = np.polyfit(
+            self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
+
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi, self.a * self.F_pad + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
@@ -252,4 +258,7 @@ BPF_method.path_difference(F_unequal=F_uneq,
                            cutT=dict_Param["cutT"],
                            cutwidth=dict_Param["cutwidth"],
                            expnum=dict_Param["expnum"],
-                           pad_exp=dict_Param["PAD_EXP"])
+                           pad_exp=dict_Param["PAD_EXP"],
+                           ana_freq_start=dict_Param["ANA_FREQ_START"],
+                           ana_freq_end=dict_Param["ANA_FREQ_END"]
+                           )
