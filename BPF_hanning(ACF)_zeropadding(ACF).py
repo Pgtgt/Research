@@ -27,7 +27,10 @@ app = QtWidgets.QApplication(sys.argv)
 
 n_air = ref_index.edlen(
     wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
-K = 0.742383644 #TODO
+THETA_RAD = 1.214548722 #原理検証の時
+
+K = 1/(1+np.cos(THETA_RAD))/n_air
+
 
 STAGE_RSN = 0.1e-6  # m/pls ステージの分解能
 LIST_HYPERPARAMS = (
@@ -100,7 +103,7 @@ class AbsoluteDistance():
     def OSAcsvfre_In(self, filepath):  # fre-IのOSA信号(35行目から)をよむ freq domeinではデータは不当間隔データ
         self.filepath = filepath
         wholedata = pd.read_csv(self.filepath, header=None, skiprows=34).values
-        # wholedataの[:,0]を取り出した後，ravel1で次元配列へ直す 単位も　Hz, Wへ変換
+        # wholedataの[:,0]を取り出した後，ravel1で次元配列へ直す 単位もHz, Wへ変換
         Fdata = np.flipud(wholedata[:, 0].ravel())*1e+12
         Idata = np.flipud(wholedata[:, 1].ravel())*1e-3
         return Fdata, Idata
@@ -110,7 +113,7 @@ class AbsoluteDistance():
         不等間隔データをスプライン補完により等間隔データにする
 
         Args:
-            x (float): signal.　補完まえ
+            x (float): signal.補完まえ
             y (float): signal.
             expnum (int, optional): exponent. Defaults to 16.
 
@@ -133,7 +136,19 @@ class AbsoluteDistance():
         dx = (xinterend-xinterstart)/(SampNum_inter-1)
         return xinter, yinter, SampNum_inter, dx
 
-    def FFT(self, x, y):  # 等間隔データをFFT
+    def FFT(self, x, y):
+        """[summary]
+        等間隔データをFFT
+        Args:
+            x ([float]): [signal]
+            y ([float]): [signal]
+
+        Returns:
+            freq ([float]): [signal]
+            FF ([complex): [signal]
+            FF_abs_amp ([float]): |FF|
+            
+        """        
         N = len(x)
         FF = np.fft.fft(y)
         dx = np.abs((x[-1]-x[0])/(N-1))
@@ -173,7 +188,7 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None], ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
+    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
         結果が欲しいときは'self.path_diff'とかで呼び出す
@@ -184,7 +199,6 @@ class AbsoluteDistance():
             cutT (float, optional): DESCRIPTION. Defaults to 10e-12.
             cutwidth (float, optional): DESCRIPTION. Defaults to 1e-12.
             expnum (int, optional): DESCRIPTION. Defaults to 16.
-            removeT ([float(minT), float(maxT)], optional): 邪魔な成分が出てきてしまった時，このTの範囲は０にする．マイナス成分は指定しなくてよい．．必要ないならどっちもＮｏｎｅへ．Defaults to [None,None]. この操作の後にピークサーチをする
         Returns:
             None
 
@@ -234,11 +248,6 @@ class AbsoluteDistance():
 
         self.F3 = copy.deepcopy(self.F2)
 
-        if (removeT[0] == None) or (removeT[1] == None):
-            pass
-        else:
-            self.F3[((removeT[0] < self.T) & (self.T < removeT[1]))
-                    ] = 0  # removeT間は0にする
 
         self.Tpeak = self.T[np.argmax(self.F2_abs_amp)]  # peak T(>0)
         self.F3[((self.T < self.Tpeak-cutwidth/2) |
@@ -257,20 +266,14 @@ class AbsoluteDistance():
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
 
-        """振動成分があるF_pad-phi領域のみを取り出して，　a, bを求めるように変更"""
+        """振動成分があるF_pad-phi領域のみを取り出して，a, bを求めるように変更"""
         self.F_pad, self.phi =self.F_pad[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)], self.phi[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)]
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
-        plt.plot(self.F_pad, self.phi-(self.a*self.F_pad +self.b) )
-        plt.title("liner error")
-        plt.show()
+
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi, self.a * self.F_pad + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
-
-        # a =2 pi Dd n / c
-        # b = phi余り
-        # Dd = path_diff
 
 
 # =============================================================================
