@@ -14,6 +14,7 @@ Created on Thu Oct 29 20:59:42 2020
                                                 +"_" +datainfo["title2"]
                                                 +"@"+str(datainfo["current_position_pulse"])+"pls" +".csv")
 
+!!! 単位はそのまま THz, mW
 """
 import glob
 import os
@@ -23,6 +24,7 @@ import sys
 from PyQt5 import QtWidgets
 app_dialog_file = QtWidgets.QApplication(sys.argv)
 
+STAGE_RSN = 0.1e-6  # TODO m/pls ステージの分解能
 # Out[23]: ['33', '4', '5', '6', '7', '1']
 
 # 初期ディレクトリ取得
@@ -110,13 +112,16 @@ list_title = [regex_title.findall(filenames[i])[0][1:-1]
               for i in range(filelen)]
 
 regex_posi = re.compile("@"+".+"+"pls")
-list_posi = [int(regex_posi.findall(filenames[i])[0][1:-3])
+list_posi_pls = [int(regex_posi.findall(filenames[i])[0][1:-3])
              for i in range(filelen)]
 
-sortlist = [filenames, list_title, list_No, list_subNo, list_posi]
+list_posi_m = [int(regex_posi.findall(filenames[i])[0][1:-3])*STAGE_RSN
+             for i in range(filelen)]
+
+sortlist = [filenames, list_title, list_No, list_subNo, list_posi_pls, list_posi_m]
 
 df_sort = pd.DataFrame(
-    sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls"])
+    sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls", "Posi_m"])
 
 
 df_sort.columns = df_sort.loc["NAME"].values.tolist()
