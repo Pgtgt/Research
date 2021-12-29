@@ -23,7 +23,10 @@ app = QtWidgets.QApplication(sys.argv)
 
 n_air = ref_index.edlen(
     wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
-K = 0.742383644 #TODO
+THETA_RAD = 1.214548722 #原理検証の時
+
+K = 1/(1+np.cos(THETA_RAD))/n_air
+
 
 STAGE_RSN = 0.1e-6  # m/pls ステージの分解能#TODO
 LIST_HYPERPARAMS = ( #TODO
@@ -60,7 +63,7 @@ LIST_HYPERPARAMS = ( #TODO
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
     引数:初期ディレクトリ
-    戻り値：ファイルパス
+    戻り値:ファイルパス
     """
     # from PyQt5 import QtWidgets
     # 実行ディレクトリ取得D
@@ -91,7 +94,7 @@ class AbsoluteDistance():
         不等間隔データをスプライン補完により等間隔データにする
 
         Args:
-            x (float): signal.　補完まえ
+            x (float): signal.補完まえ
             y (float): signal.
             expnum (int, optional): exponent. Defaults to 16.
 
@@ -238,7 +241,7 @@ class AbsoluteDistance():
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
 
-        """振動成分があるF_pad-phi領域のみを取り出して，　a, bを求めるように変更"""
+        """振動成分があるF_pad-phi領域のみを取り出して，a, bを求めるように変更"""
         self.F_pad, self.phi =self.F_pad[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)], self.phi[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)]
         self.a, self.b = np.polyfit(
             self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
