@@ -9,9 +9,10 @@ https://watlab-blog.com/2019/04/20/window-correction/
 #!!! たくさんプロットされるため，inline plotがおすすめ．
 """
 
-# =============================================================================
-# # ------------バンドパスフィルタ法------
-# =============================================================================
+# *****************************
+# * ------------バンドパスフィルタ法------
+# *****************************
+#%%
 import pandas as pd
 import numpy as np
 import os
@@ -24,10 +25,10 @@ import ref_index
 from scipy.fftpack import fftfreq
 from PyQt5 import QtWidgets
 app = QtWidgets.QApplication(sys.argv)
-
+#%%
 n_air = ref_index.edlen(
     wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
-THETA_RAD = 1.214548722 #原理検証の時
+THETA_RAD = 1.21454872202264
 
 K = 1/(1+np.cos(THETA_RAD))/n_air
 
@@ -39,31 +40,11 @@ LIST_HYPERPARAMS = (
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=10e-12, cutwidth=35e-12, expnum=13, PAD_EXP=4,ANA_FREQ_START=191.65e12,ANA_FREQ_END=191.75e12),  # Goo
-
-    # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
-    # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
-    # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo0
-    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo1
-
-
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo4
-    # dict(cutT=2e-12, cutwidth=1.5e-12, expnum=13, PAD_EXP=4),  # Goo5
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),  # Goo6
-    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=5),  # Goo7
-    # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=5),  # Goo8
-    # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=5),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=5),  # Goo
-    # dict(cutT=2e-12, cutwidth=1.5e-12, expnum=13, PAD_EXP=5),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.005e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.05e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.1e-12, expnum=13, PAD_EXP=4),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo
+    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=4,ANA_FREQ_START=191.7663e12,ANA_FREQ_END=191.9839e12), 
 
 )
 
+#%%
 
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
@@ -359,7 +340,8 @@ for idict_Params in LIST_HYPERPARAMS:
 
     name_file_AnaResult = "cutT" + str(idict_Params["cutT"]) + "_" +\
         "cutw"+str(idict_Params["cutwidth"])+"_" +\
-        "exp"+str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"]) + ".xlsx"
+        "exp"+str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])+\
+        "startend"+str(idict_Params["ANA_FREQ_START"])+"-"+str(idict_Params["ANA_FREQ_END"]) + ".xlsx"
     path_AnaResult = os.path.join(dir_Ana, name_file_AnaResult)
 
     df_resultParams.to_excel(path_AnaResult)
