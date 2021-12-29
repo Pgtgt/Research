@@ -157,7 +157,7 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, removeT=[None, None], ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
+    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
         結果が欲しいときは'self.path_diff'とかで呼び出す
@@ -218,11 +218,6 @@ class AbsoluteDistance():
 
         self.F3 = copy.deepcopy(self.F2)
 
-        if (removeT[0] == None) or (removeT[1] == None):
-            pass
-        else:
-            self.F3[((removeT[0] < self.T) & (self.T < removeT[1]))
-                    ] = 0  # removeT間は0にする
 
         self.Tpeak = self.T[np.argmax(self.F2_abs_amp)]  # peak T(>0)
         self.F3[((self.T < self.Tpeak-cutwidth/2) |
