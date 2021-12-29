@@ -4,10 +4,10 @@ Created on Thu Dec  2 18:17:29 2021
 
 @author: wsxhi
 """
-
-# =============================================================================
-# # ------------バンドパスフィルタ法------
-# =============================================================================
+# %%
+# *********************************
+# * ------------バンドパスフィルタ法------
+# *********************************
 import pandas as pd
 import numpy as np
 import os
@@ -21,12 +21,12 @@ from scipy.fftpack import fftfreq
 from PyQt5 import QtWidgets
 app = QtWidgets.QApplication(sys.argv)
 
+# %%
 n_air = ref_index.edlen(
     wave=(1554.134049+1563.862587)/2, t=27, p=101325, rh=70)
 THETA_RAD = 1.214548722 #原理検証の時
 
 K = 1/(1+np.cos(THETA_RAD))/n_air
-
 
 STAGE_RSN = 0.1e-6  # m/pls ステージの分解能#TODO
 LIST_HYPERPARAMS = ( #TODO
@@ -37,11 +37,6 @@ LIST_HYPERPARAMS = ( #TODO
 
     dict(cutT=35e-12, cutwidth=10e-12, expnum=13, PAD_EXP=4,ANA_FREQ_START=191.65e12,ANA_FREQ_END=191.75e12),  # Goo
 
-    # dict(cutT=10e-12, cutwidth=2e-13, expnum=14),  # Goo
-    # dict(cutT=10e-12, cutwidth=2e-12, expnum=14),  # Goo
-    # dict(cutT=10e-12, cutwidth=5e-12, expnum=14),  # Goo
-    # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo0
-    # dict(cutT=2e-12, cutwidth=0.01e-12, expnum=13, PAD_EXP=4),  # Goo1
 
 
     # dict(cutT=2e-12, cutwidth=0.5e-12, expnum=13, PAD_EXP=4),  # Goo4
@@ -74,8 +69,7 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
 
     # sys.exit(app_dialog_file.exec_())
     return filepath[0]
-
-
+# %%
 class AbsoluteDistance():
 
     def __init__(self):
