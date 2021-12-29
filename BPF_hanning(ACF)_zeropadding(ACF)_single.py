@@ -84,7 +84,7 @@ class AbsoluteDistance():
     def OSAcsvfre_In(self, filepath):  # fre-IのOSA信号(35行目から)をよむ freq domeinではデータは不当間隔データ
         self.filepath = filepath
         wholedata = pd.read_csv(self.filepath, header=None, skiprows=34).values
-        # wholedataの[:,0]を取り出した後，ravel1で次元配列へ直す 単位も　Hz, Wへ変換
+        # wholedataの[:,0]を取り出した後，ravel1で次元配列へ直す 単位もHz, Wへ変換
         Fdata = np.flipud(wholedata[:, 0].ravel())*1e+12
         Idata = np.flipud(wholedata[:, 1].ravel())*1e-3
         return Fdata, Idata
@@ -117,7 +117,19 @@ class AbsoluteDistance():
         dx = (xinterend-xinterstart)/(SampNum_inter-1)
         return xinter, yinter, SampNum_inter, dx
 
-    def FFT(self, x, y):  # 等間隔データをFFT
+    def FFT(self, x, y):
+        """[summary]
+        等間隔データをFFT
+        Args:
+            x ([float]): [signal]
+            y ([float]): [signal]
+
+        Returns:
+            freq ([float]): [signal]
+            FF ([complex): [signal]
+            FF_abs_amp ([float]): |FF|
+            
+        """        
         N = len(x)
         FF = np.fft.fft(y)
         dx = np.abs((x[-1]-x[0])/(N-1))
@@ -168,7 +180,6 @@ class AbsoluteDistance():
             cutT (float, optional): DESCRIPTION. Defaults to 10e-12.
             cutwidth (float, optional): DESCRIPTION. Defaults to 1e-12.
             expnum (int, optional): DESCRIPTION. Defaults to 16.
-            removeT ([float(minT), float(maxT)], optional): 邪魔な成分が出てきてしまった時，このTの範囲は０にする．マイナス成分は指定しなくてよい．．必要ないならどっちもＮｏｎｅへ．Defaults to [None,None]. この操作の後にピークサーチをする
         Returns:
             None
 
