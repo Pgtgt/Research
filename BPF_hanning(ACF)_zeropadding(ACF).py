@@ -40,11 +40,7 @@ LIST_HYPERPARAMS = (
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=0,ANA_FREQ_START=191600000000000.0,ANA_FREQ_END=191807000000000.0), 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=1,ANA_FREQ_START=191600000000000.0,ANA_FREQ_END=191807000000000.0), 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191600000000000.0,ANA_FREQ_END=191807000000000.0), 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=3,ANA_FREQ_START=191600000000000.0,ANA_FREQ_END=191807000000000.0), 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=4,ANA_FREQ_START=191600000000000.0,ANA_FREQ_END=191807000000000.0), 
+    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.7928e12,ANA_FREQ_END=191.9765e12), 
 
 )
 
@@ -79,7 +75,7 @@ def Dialog_Folder(rootpath=r"C:", caption="choise"):
         parent=None, caption=caption, directory=rootpath)
     return folderpath
 
-
+# %%
 class AbsoluteDistance():
 
     def __init__(self):
@@ -149,11 +145,24 @@ class AbsoluteDistance():
         return freq, FF, FF_abs_amp
 
     def zero_padding(self, data, len_pad):
+        """[zero paddingの結果と，補正係数acfを出力]
+        本サイトの補正係数，おそらく本原理においては不要．算出だけした．
+        https://watlab-blog.com/2020/11/16/zero-padding-fft/ 
+        Args:
+            data ([float array]): [description]
+            len_pad ([int]): [description]
+
+        Returns:
+            data_pad [float array]: [description]
+            acf[float]: [description]
+            
+        """        
+
         pad = np.zeros(len_pad-len(data))
         data_pad = np.concatenate([data, pad])
         acf = (sum(np.abs(data)) / len(data)) / \
             (sum(np.abs(data_pad)) / len(data_pad))
-        return data_pad * acf
+        return data_pad, acf
 
     def wrappedphase(self, e):
         """
@@ -192,21 +201,28 @@ class AbsoluteDistance():
         self.F_inter, self.I_inter, self.SampNum_inter, self.dF = self.Inter(
             F_unequal, I_unequal, expnum)
 
-        """window (F,Iが非周期信号であるため)"""
+        """window (F,Iが非周期信号であるため)
+        https://rikei-fufu.com/2020/06/27/post-3237-python-fft/
+        このサイトに従い，補正係数acf_han ももとめた
+        本サイトに従い補正係数も設けたが，おそらく本原理においては不要
+        """
+        
         hanning_win = np.hanning(self.SampNum_inter)
         # FFT後の数値に掛ければOKの補正係数
         acf_han = 1/(sum(hanning_win)/self.SampNum_inter)
         self.I_han = self.I_inter * hanning_win
 
         """zero padding (サンプリング数が不十分であり，FFT周波数分解能が不足しているため)"""
-        len_pad = self.SampNum_inter*pow(2, pad_exp)
-        self.I_han_pad = self.zero_padding(self.I_han, len_pad)
+        self.len_pad = self.SampNum_inter*pow(2, pad_exp)
+        self.I_han_pad, self.acf_pad=self.zero_padding(self.I_han, self.len_pad)
         self.F_pad = np.linspace(
-            self.F_inter[0], self.F_inter[0]+(len_pad)*self.dF, len_pad+1)[:-1]
+            self.F_inter[0], 
+            self.F_inter[0]+(self.len_pad)*self.dF, 
+            self.len_pad+1)[:-1]
         """FFT:  I(f) C_1 + C_2*cos(phi(f) ) ====>   FFt(T)=C_1 + C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))"""
         self.T, self.FFt, self.FFt_abs_amp = self.FFT(
             self.F_pad, self.I_han_pad)
-        self.FFt, self.FFt_abs_amp = self.FFt * acf_han, self.FFt_abs_amp * acf_han
+        self.FFt, self.FFt_abs_amp = self.FFt, self.FFt_abs_amp
 
         # plt.plot(self.T, self.FFt_abs_amp)
         # plt.xlim(0, 30e-12)
@@ -248,16 +264,14 @@ class AbsoluteDistance():
         # wrap_abs=np.abs(wrap)
 
         self.phi = np.unwrap(p=self.wrap * 2)/2
-        self.a, self.b = np.polyfit(
-            self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
 
         """振動成分があるF_pad-phi領域のみを取り出して，a, bを求めるように変更"""
-        self.F_pad, self.phi =self.F_pad[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)], self.phi[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)]
+        self.F_pad_cut, self.phi_cut =self.F_pad[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)], self.phi[(ana_freq_start<self.F_pad)&(self.F_pad<ana_freq_end)]
         self.a, self.b = np.polyfit(
-            self.F_pad, self.phi, 1)  # phi = a *F + bの1じ多項式近似
+            self.F_pad_cut, self.phi_cut, 1)  # phi = a *F + bの1じ多項式近似
 
         # https://biotech-lab.org/articles/4907 R2値
-        self.R2 = metrics.r2_score(self.phi, self.a * self.F_pad + self.b)
+        self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
 
 
@@ -370,3 +384,4 @@ for idict_Params in LIST_HYPERPARAMS:
 
     # plt.xlim(-20000, 20000)
     # plt.ylim(0.035, 0.055)
+del app
