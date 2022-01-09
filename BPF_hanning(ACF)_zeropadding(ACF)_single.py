@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import ref_index
 from scipy.fftpack import fftfreq
 from PyQt5 import QtWidgets
+import openpyxl
 app = QtWidgets.QApplication(sys.argv)
 
 # %%
@@ -51,6 +52,7 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
     # sys.exit(app_dialog_file.exec_())
     return filepath[0]
 # %%
+
 class AbsoluteDistance():
 
     def __init__(self):
@@ -114,7 +116,7 @@ class AbsoluteDistance():
         FF = np.concatenate([FF[int(N/2):], FF[:int(N/2)]])
 
         FF_abs = np.abs(FF)
-        FF_abs_amp = FF_abs/(N/2)
+        FF_abs_amp = FF_abs/(N)
 
         # f=np.linspace(0,1.0/dx,N)
         return freq, FF, FF_abs_amp
@@ -214,7 +216,7 @@ class AbsoluteDistance():
         self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
         self.F2_abs = np.abs(self.F2)
         # 振幅をもとの信号に揃える
-        self.F2_abs_amp = self.F2_abs / self.SampNum_inter * 2  # 交流成分はデータ数で割って2倍
+        self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る　1/2はしない．
         # plt.plot(T, F2_abs_amp)
         # plt.xlim(-300e-12, 300e-12)
         # plt.ylim(-0.2e-7, 0.2e-6)
@@ -222,22 +224,22 @@ class AbsoluteDistance():
         """Filtering:   F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
           ====>  F3(T)=C_2/2 exp(j*phi(T) )"""
 
-        self.F3 = copy.deepcopy(self.F2)
+        self.F3 = copy.deepcopy(self.FFt)
+        self.F3_abs_amp = copy.deepcopy(self.FFt_abs_amp)
 
 
         self.Tpeak = self.T[np.argmax(self.F2_abs_amp)]  # peak T(>0)
         self.F3[((self.T < self.Tpeak-cutwidth/2) |
                  (self.Tpeak+cutwidth/2 < self.T))] = 0  # 所望のピークだけのこす
+        self.F3_abs_amp[((self.T < self.Tpeak-cutwidth/2) |
+                 (self.Tpeak+cutwidth/2 < self.T))] = 0  # 所望のピークだけのこす
 
         """IFFT   F3(T)=C_2/2 exp(j*phi(T) )  ====>  I(f)=C_2/2 exp(j*phi(f) )"""
         self.F3_ifft = np.fft.ifft(self.F3)  # IFFT  C_2/2 exp(j*phi(f) )
-        self.F3_ifft_abs = np.abs(self.F3_ifft)
-        self.F3_ifft_abs_amp = self.F3_ifft_abs / self.SampNum_inter * 2
 
         self.wrap = self.wrappedphase(self.F3_ifft)
         # wrap=F3_ifft
         # wrap_abs=np.abs(wrap)
-
         self.phi = np.unwrap(p=self.wrap * 2)/2
 
         """振動成分があるF_pad-phi領域のみを取り出して，a, bを求めるように変更"""
@@ -249,13 +251,14 @@ class AbsoluteDistance():
         self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
 
+
 path_csv = Dialog_File(caption="choise single CSV")
 
-BPF_method = AbsoluteDistance()
-F_uneq, I_uneq = BPF_method.OSAcsvfre_In(path_csv)
+BPF = AbsoluteDistance()
+F_uneq, I_uneq = BPF.OSAcsvfre_In(path_csv)
 
 dict_Param =LIST_HYPERPARAMS[0]
-BPF_method.path_difference(F_unequal=F_uneq,
+BPF.path_difference(F_unequal=F_uneq,
                            I_unequal=I_uneq,
                            cutT=dict_Param["cutT"],
                            cutwidth=dict_Param["cutwidth"],
@@ -266,3 +269,29 @@ BPF_method.path_difference(F_unequal=F_uneq,
                            )
 
 del app
+
+intered = pd.DataFrame() #interpolateされた後のデータ数2^expnumのデータを扱う
+padded=pd.DataFrame() #paddingされた後のデータ数2^expnum * 2^padexpのデータを扱う
+cut =pd.DataFrame() # 線形近似のためにカット荒れた後のデータを扱う．
+# %%
+intered["F_inter"], intered["I_inter"],intered["I_han"]=BPF.F_inter,BPF.I_inter,BPF.I_han
+# TODO
+padded["F_pad"],padded["I_han_pad"]=BPF.F_pad,BPF.I_han_pad
+padded["T"],padded["FFt"],padded["FFt_re"],padded["FFt_im"],padded["FFt_abs_amp"]=BPF.T,BPF.FFt,BPF.FFt.real,BPF.FFt.imag,BPF.FFt_abs_amp
+padded["F3"],padded["F3_re"],padded["F3_im"],padded["F3_abs_amp"]=BPF.F3,BPF.F3.real,BPF.F3.imag,BPF.F3_abs_amp
+padded["F3_ifft"],padded["F3_ifft_re"],padded["F3_ifft_im"]=BPF.F3_ifft,BPF.F3_ifft.real,BPF.F3_ifft.imag
+padded["wrapped phase"], padded["phi"]=BPF.wrap, BPF.phi
+
+cut["F_cut"], cut["phi_cut"]=BPF.F_pad_cut, BPF.phi_cut
+
+# %%
+
+path_datafolder = os.path.dirname(path_csv)
+path_excel=os.path.join(path_datafolder,"results.xlsx")
+wb = openpyxl.Workbook()
+wb.save(path_excel)
+
+with pd.ExcelWriter(path_excel,) as writer:
+    intered.to_excel(writer, sheet_name="intepolated",)
+    padded.to_excel(writer, sheet_name="padded",)
+    cut.to_excel(writer, sheet_name="cut",)
