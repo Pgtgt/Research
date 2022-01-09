@@ -49,7 +49,7 @@ LIST_HYPERPARAMS = (
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
     引数:初期ディレクトリ
-    戻り値：ファイルパス
+    戻り値:ファイルパス
     """
     # from PyQt5 import QtWidgets
     # 実行ディレクトリ取得D
@@ -65,7 +65,7 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
 def Dialog_Folder(rootpath=r"C:", caption="choise"):
     """
     引数:初期ディレクトリ
-    戻り値：フォルダ(ディレクトリ)パス
+    戻り値:フォルダ(ディレクトリ)パス
     """
     # from PyQt5 import QtWidgets
     # import sys
@@ -237,10 +237,10 @@ class AbsoluteDistance():
           ====> F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))"""
         self.F2 = copy.deepcopy(self.FFt)
         self.F2[(self.T <= 0)] = 0  # (負の)周波数帯をカット
-        self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
+        self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする,光源の影響排除
         self.F2_abs = np.abs(self.F2)
         # 振幅をもとの信号に揃える
-        self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る　1/2はしない．
+        self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る 1/2はしない．
         # plt.plot(T, F2_abs_amp)
         # plt.xlim(-300e-12, 300e-12)
         # plt.ylim(-0.2e-7, 0.2e-6)
@@ -278,7 +278,7 @@ class AbsoluteDistance():
 
 # =============================================================================
 # 分析準備
-# 分析用データを取得．　結果保存用dfを作成，計算用インスタンスの作成
+# 分析用データを取得． 結果保存用dfを作成，計算用インスタンスの作成
 # =============================================================================
 """CSVをまとめたxlsxを選択し，分析用データを得る"""
 print("CSVをまとめたxlsxを選択")
