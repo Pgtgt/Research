@@ -216,7 +216,7 @@ class AbsoluteDistance():
         self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
         self.F2_abs = np.abs(self.F2)
         # 振幅をもとの信号に揃える
-        self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る　1/2はしない．
+        self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る 1/2はしない．
         # plt.plot(T, F2_abs_amp)
         # plt.xlim(-300e-12, 300e-12)
         # plt.ylim(-0.2e-7, 0.2e-6)
