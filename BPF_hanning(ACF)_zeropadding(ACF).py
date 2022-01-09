@@ -76,6 +76,7 @@ def Dialog_Folder(rootpath=r"C:", caption="choise"):
     return folderpath
 
 # %%
+
 class AbsoluteDistance():
 
     def __init__(self):
@@ -139,7 +140,7 @@ class AbsoluteDistance():
         FF = np.concatenate([FF[int(N/2):], FF[:int(N/2)]])
 
         FF_abs = np.abs(FF)
-        FF_abs_amp = FF_abs/(N/2)
+        FF_abs_amp = FF_abs/(N)
 
         # f=np.linspace(0,1.0/dx,N)
         return freq, FF, FF_abs_amp
@@ -239,7 +240,7 @@ class AbsoluteDistance():
         self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
         self.F2_abs = np.abs(self.F2)
         # 振幅をもとの信号に揃える
-        self.F2_abs_amp = self.F2_abs / self.SampNum_inter * 2  # 交流成分はデータ数で割って2倍
+        self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る　1/2はしない．
         # plt.plot(T, F2_abs_amp)
         # plt.xlim(-300e-12, 300e-12)
         # plt.ylim(-0.2e-7, 0.2e-6)
@@ -247,22 +248,22 @@ class AbsoluteDistance():
         """Filtering:   F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))
           ====>  F3(T)=C_2/2 exp(j*phi(T) )"""
 
-        self.F3 = copy.deepcopy(self.F2)
+        self.F3 = copy.deepcopy(self.FFt)
+        self.F3_abs_amp = copy.deepcopy(self.FFt_abs_amp)
 
 
         self.Tpeak = self.T[np.argmax(self.F2_abs_amp)]  # peak T(>0)
         self.F3[((self.T < self.Tpeak-cutwidth/2) |
                  (self.Tpeak+cutwidth/2 < self.T))] = 0  # 所望のピークだけのこす
+        self.F3_abs_amp[((self.T < self.Tpeak-cutwidth/2) |
+                 (self.Tpeak+cutwidth/2 < self.T))] = 0  # 所望のピークだけのこす
 
         """IFFT   F3(T)=C_2/2 exp(j*phi(T) )  ====>  I(f)=C_2/2 exp(j*phi(f) )"""
         self.F3_ifft = np.fft.ifft(self.F3)  # IFFT  C_2/2 exp(j*phi(f) )
-        self.F3_ifft_abs = np.abs(self.F3_ifft)
-        self.F3_ifft_abs_amp = self.F3_ifft_abs / self.SampNum_inter * 2
 
         self.wrap = self.wrappedphase(self.F3_ifft)
         # wrap=F3_ifft
         # wrap_abs=np.abs(wrap)
-
         self.phi = np.unwrap(p=self.wrap * 2)/2
 
         """振動成分があるF_pad-phi領域のみを取り出して，a, bを求めるように変更"""
