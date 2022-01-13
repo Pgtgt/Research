@@ -12,7 +12,7 @@ from PyQt5 import QtWidgets
 import pandas as pd
 
 EXP_NUM = 13
-PAD_EXP = 4
+PAD_EXP = 2
 
 app = QtWidgets.QApplication(sys.argv)
 
@@ -147,6 +147,7 @@ plotly.offline.plot(fig,
 
 fig.write_html(path_html)
 
+del app
 
 # x_label,y_label,x_unit,y_unit = "Freq","Intensity","Hz","W"
 
