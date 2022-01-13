@@ -40,7 +40,9 @@ LIST_HYPERPARAMS = (
     # Out[26]: 8.333263889468021e-13
 
 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.7928e12,ANA_FREQ_END=191.9765e12), 
+    # dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.438e12,ANA_FREQ_END=191.78e12),  for 10
+    # dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.6e12,ANA_FREQ_END=191.807e12), 
+    dict(cutT=4e-12, cutwidth=20e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.85e12,ANA_FREQ_END=192e12), 
 
 )
 
@@ -237,7 +239,7 @@ class AbsoluteDistance():
           ====> F2(T)=C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))"""
         self.F2 = copy.deepcopy(self.FFt)
         self.F2[(self.T <= 0)] = 0  # (負の)周波数帯をカット
-        self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする,光源の影響排除
+        self.F2[(self.T < cutT)] = 0  # カットオフ未満周波数のデータをゼロにする，光源の影響排除
         self.F2_abs = np.abs(self.F2)
         # 振幅をもとの信号に揃える
         self.F2_abs_amp = self.F2_abs / self.SampNum_inter  # 交流成分はデータ数で割る 1/2はしない．
@@ -275,7 +277,7 @@ class AbsoluteDistance():
         self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
         self.path_diff = 299792458/(2*np.pi*n_air)*self.a
 
-
+# %%
 # =============================================================================
 # 分析準備
 # 分析用データを取得． 結果保存用dfを作成，計算用インスタンスの作成
@@ -294,6 +296,7 @@ F_uneq = df_wholedata.index[28:].astype(float).values * 1e12
 # https://qiita.com/ShoheiKojima/items/30ee0925472b7b3e5d5c
 names_rawdata = df_sort.loc["NAME", :].to_list()
 
+# %%
 """計算用インスタンスBPF_method と結果格納データフレームdf_resultParams df_phiの準備"""
 
 dict_instance = dict()
@@ -385,4 +388,6 @@ for idict_Params in LIST_HYPERPARAMS:
 
     # plt.xlim(-20000, 20000)
     # plt.ylim(0.035, 0.055)
+
+# %%
 del app
