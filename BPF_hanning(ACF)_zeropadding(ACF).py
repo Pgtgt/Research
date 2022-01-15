@@ -37,7 +37,7 @@ STAGE_RSN = 0.1e-6  # m/pls ステージの分解能
 LIST_HYPERPARAMS = (
     # @ exp13,pad4
     #     BPF_method.delta_T
-    # Out[26]: 8.333263889468021e-13
+    # Out[26]: 8.333263889468021e-13 
 
 
     # dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.438e12,ANA_FREQ_END=191.78e12),  for 10
