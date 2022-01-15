@@ -186,7 +186,7 @@ with pd.ExcelWriter(path_csvmatome, engine="openpyxl", mode="a") as writer:
     # https://stackoverflow.com/questions/54863238/pandas-excelwriter-valueerror-append-mode-is-not-supported-with-xlsxwriter
     df_sort_fit.to_excel(writer, sheet_name="sort_fit",)
 
-
+del app
 # col = ["s1","s2","s3","s4","s5",]
 # index =[1,2,3,4,5,6,7,8]
 # df = pd.DataFrame(index = index, columns = col)
