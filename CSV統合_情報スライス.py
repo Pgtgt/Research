@@ -22,7 +22,7 @@ import pandas as pd
 import re
 import sys
 from PyQt5 import QtWidgets
-app_dialog_file = QtWidgets.QApplication(sys.argv)
+app = QtWidgets.QApplication(sys.argv)
 
 STAGE_RSN = 0.1e-6  # TODO m/pls ステージの分解能
 # Out[23]: ['33', '4', '5', '6', '7', '1']
@@ -87,13 +87,13 @@ https://niwakomablog.com/python-number-extract/#:~:text=%E4%BD%BF%E3%81%84%E6%96
 folderpath = Dialog_Folder()
 print(folderpath)
 
-# ex)"filepath =  C:/Users/anonymous/Dropbox/pythoncode/OSAhappy/inter202109161816\OSA1_-10000pulseNo000301.csv
+# ex)"filepath = "E:\uncer\inter\1st202201091602\000989-990_OSA1@-5000pls.csv"
 filepaths = glob.glob(os.path.join(folderpath, '*.csv'))
 filelen = len(filepaths)  # CSVデータ数に対応
-# 拡張子ありのファイル名　ex)filenameswithext=OSA1_-10000pulseNo000301.csv
+# 拡張子ありのファイル名 "000989-990_OSA1@-5000pls.csv"
 filenameswithext = [os.path.split(filepaths[i])[-1] for i in range(filelen)]
 
-# 拡張子なしのファイル名　ex)filenameswithext=OSA1_-10000pulseNo000301
+# 拡張子なしのファイル名 "000989-990_OSA1@-5000pls"
 filenames = [os.path.splitext(filenameswithext[i])[0] for i in range(filelen)]
 
 """文字列から最期の数字を抜き出す方法はこれが一番よい
@@ -147,7 +147,7 @@ df_wholedata.columns = df_sort.loc["NAME"].values.tolist()
 df_wholedata = df_wholedata.sort_index(axis="columns")
 
 # =============================================================================
-# １つのＸＬＳＸフォルダにdf_wholedata, dfsortframe _sortedを保存する．
+# １つのxlsxフォルダにdf_wholedata, dfsortframe _sortedを保存する．
 # =============================================================================
 XLSXpath = os.path.join(os.path.dirname(folderpath), "CSV_matome.xlsx")
 
@@ -155,7 +155,7 @@ with pd.ExcelWriter(XLSXpath,) as writer:
     df_wholedata.to_excel(writer, sheet_name="wholedata",)
     df_sort.to_excel(writer, sheet_name="sort",)
 
-
+del app
 """
 # df_sort_sorted = df_sort.sort_values(by=["TITLE", "No", ], axis=1)
 """
