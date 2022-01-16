@@ -137,11 +137,11 @@ for dataname in df_intensities.columns:
         # r2 = 1 - (rss / tss)
 
         # ! plot (%matplotlib inlineがおすすめ)
-        plt.plot(freq, df_intensities[dataname])
-        plt.plot(freq, gauss(freq, A=popt[0], mu=popt[1], sigma=popt[2]))
-        plt.title(dataname)
-        plt.ylim( -0.01*max_intensity, max_intensity)
-        plt.show()
+        # plt.plot(freq, df_intensities[dataname])
+        # plt.plot(freq, gauss(freq, A=popt[0], mu=popt[1], sigma=popt[2]))
+        # plt.title(dataname)
+        # plt.ylim( -0.01*max_intensity, max_intensity)
+        # plt.show()
         
     except:
         print(dataname+"failure")
