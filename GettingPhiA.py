@@ -359,7 +359,7 @@ for idict_Params in LIST_HYPERPARAMS:
         df_resultParams.loc["z_um", i_name] = BPF_method.path_diff * K*1e6
 
         df_phi.loc[:, i_name] = BPF_method.phi
-        df_phi_Uncer.loc[:, i_name] = BPF_method.phi
+        df_phi_Uncer.loc[:, i_name] = BPF_method.phi_Uncer
         print("\r"+i_name, end="")
     print("\n")
     print("\n")
