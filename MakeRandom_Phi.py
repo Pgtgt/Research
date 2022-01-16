@@ -83,35 +83,41 @@ df_params.to_excel(path_params)
 path_params = Dialog_File()
 df_params = pd.read_excel(path_params,index_col=0)
 freqs = df_params.index
-# * step5 1e4回のsimulation trialを取得．
-# * phi発生および傾きa, OPDの計算，データ保存
-trials_sim = [i for i in range(0,10000)]
-df_phi_sim=pd.DataFrame(index=freqs, columns=trials_sim)
 
-for freq in freqs:
-    """10000trialのphiデータフレームの作成"""
-    phi_random_singlefreq = np.random.normal(loc = df_params.loc[freq, "mu"],
-                                scale = df_params.loc[freq, "sigma"],size=10000)
-    df_phi_sim.loc[freq,:] = phi_random_singlefreq
-    
-"""各trialにおいて傾きa=dphi/df, OPD求める．ただし，dict_LF(Liner Fitting)の指定範囲以内に限るぢってぃんぐ"""
-ana_freq_start,ana_freq_end = dict_LF["ANA_FREQ_START"], dict_LF["ANA_FREQ_END"]
-limit = (ana_freq_start<freqs)&(freqs<ana_freq_end)    
-df_phi_sim_limit = df_phi_sim.loc[limit,:] # df_phi_simから，dict_LFの範囲のみ間引いたpd
+CHAPTER_sim = [i for i in range(0,10)]
+SECTION_sim = [i for i in range(0,100)]
 
-df_LFresult = pd.DataFrame(index=["a","b", "OPD"], columns=trials_sim)
+for chapter in CHAPTER_sim:
+    for section in SECTION_sim:
+        # * step5 1e4回のsimulation trialを取得．
+        # * phi発生および傾きa, OPDの計算，データ保存
+        trials_sim = [i for i in range(0,10000)]
+        df_phi_sim=pd.DataFrame(index=freqs, columns=trials_sim)
 
-for trial in trials_sim:
-    a, b = np.polyfit(df_phi_sim_limit.index.tolist(), 
-                      df_phi_sim_limit.loc[:, trial].tolist(), 1)
-    OPD = c/(2*np.pi)*a
-    df_LFresult.loc["a",trial]=a
-    df_LFresult.loc["b",trial]=b
-    df_LFresult.loc["OPD",trial]=OPD
+        for freq in freqs:
+            """10000trialのphiデータフレームの作成"""
+            phi_random_singlefreq = np.random.normal(loc = df_params.loc[freq, "mu"],
+                                        scale = df_params.loc[freq, "sigma"],size=10000)
+            df_phi_sim.loc[freq,:] = phi_random_singlefreq
+            
+        """各trialにおいて傾きa=dphi/df, OPD求める．ただし，dict_LF(Liner Fitting)の指定範囲以内に限るぢってぃんぐ"""
+        ana_freq_start,ana_freq_end = dict_LF["ANA_FREQ_START"], dict_LF["ANA_FREQ_END"]
+        limit = (ana_freq_start<freqs)&(freqs<ana_freq_end)    
+        df_phi_sim_limit = df_phi_sim.loc[limit,:] # df_phi_simから，dict_LFの範囲のみ間引いたpd
 
-df_phi_sim.to_excel("phi_sim.xlsx")
-df_phi_sim_limit.to_excel("phi_sim_limit.xlsx")
-df_LFresult.to_excel("abOPD.xlsx")
+        df_LFresult = pd.DataFrame(index=["a","b", "OPD"], columns=trials_sim)
+
+        for trial in trials_sim:
+            a, b = np.polyfit(df_phi_sim_limit.index.tolist(), 
+                            df_phi_sim_limit.loc[:, trial].tolist(), 1)
+            OPD = c/(2*np.pi)*a
+            df_LFresult.loc["a",trial]=a
+            df_LFresult.loc["b",trial]=b
+            df_LFresult.loc["OPD",trial]=OPD
+
+        # df_phi_sim.to_excel("phi_sim.xlsx")
+        # df_phi_sim_limit.to_excel("phi_sim_limit.xlsx")
+        df_LFresult.to_excel(str(chapter)+"-"+str(section)+"abOPD.xlsx")
 
 
 # 途中でこまごま．乱数の種の確認が必要
