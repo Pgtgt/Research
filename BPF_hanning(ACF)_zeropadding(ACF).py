@@ -185,10 +185,10 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
+    def get_OPD(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
-        結果が欲しいときは'self.path_diff'とかで呼び出す
+        結果が欲しいときは'self.OPD'とかで呼び出す
 
         C_1 + C_2*cos(phi) =>C_2/2 *exp(j*phi) => phi = a *F +b =>a
         Args:
@@ -275,7 +275,7 @@ class AbsoluteDistance():
 
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
-        self.path_diff = 299792458/(2*np.pi*n_air)*self.a
+        self.OPD = 299792458/(2*np.pi)*self.a
 
 # %%
 # =============================================================================
@@ -303,7 +303,7 @@ dict_instance = dict()
 BPF_method = AbsoluteDistance()
 
 df_resultParams = pd.DataFrame(
-    index=["path_diff", "Tpeak", "a", "b", "R2",
+    index=["OPD", "Tpeak", "a", "b", "R2",
            "cutT", "cutwidth", "expnum", "pad_exp", "k",
            "stage_m", "stage_um", "z_m", "z_um"],
     columns=names_rawdata)
@@ -331,16 +331,16 @@ for idict_Params in LIST_HYPERPARAMS:
         """
         I_uneq = df_wholedata.loc[:, i_name][28:].astype(float).values*1e-3
         # LIST_HYPERPARAMS
-        BPF_method.path_difference(F_unequal=F_uneq, I_unequal=I_uneq,
+        BPF_method.get_OPD(F_unequal=F_uneq, I_unequal=I_uneq,
                                    cutT=idict_Params["cutT"], cutwidth=idict_Params["cutwidth"], expnum=idict_Params["expnum"], pad_exp=idict_Params["PAD_EXP"],ana_freq_start=idict_Params["ANA_FREQ_START"],ana_freq_end=idict_Params["ANA_FREQ_END"])
 
         df_resultParams.loc["Tpeak", i_name] = BPF_method.Tpeak
         df_resultParams.loc["a", i_name] = BPF_method.a
         df_resultParams.loc["b", i_name] = BPF_method.b
         df_resultParams.loc["R2", i_name] = BPF_method.R2
-        df_resultParams.loc["path_diff", i_name] = BPF_method.path_diff
-        df_resultParams.loc["z_m", i_name] = BPF_method.path_diff * K
-        df_resultParams.loc["z_um", i_name] = BPF_method.path_diff * K*1e6
+        df_resultParams.loc["OPD", i_name] = BPF_method.OPD
+        df_resultParams.loc["z_m", i_name] = BPF_method.OPD * K
+        df_resultParams.loc["z_um", i_name] = BPF_method.OPD * K*1e6
 
         # df_phi.loc[:, i_name] = BPF_method.phi
         print("\r"+i_name, end="")
@@ -380,7 +380,7 @@ for idict_Params in LIST_HYPERPARAMS:
         + "cutwidth=" + str(idict_Params["cutwidth"])+"\n" \
         + "expnum=" + str(idict_Params["expnum"])+str(idict_Params["PAD_EXP"])
     fig = plt.scatter(df_sort.loc["Posi_pls", :].astype(int),
-                      df_resultParams.loc["path_diff", :], s=1, label=title)
+                      df_resultParams.loc["OPD", :], s=1, label=title)
     # plt.xlim(-20000, 0)
     # plt.ylim(0.005, 0.01)
     plt.title(title)
