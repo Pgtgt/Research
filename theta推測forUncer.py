@@ -139,11 +139,11 @@ for dataname in df_intensities.columns:
         # r2 = 1 - (rss / tss)
 
         # ! plot (%matplotlib inlineがおすすめ)
-        plt.plot(freq, df_intensities[dataname])
-        plt.plot(freq, gauss(freq, A=popt[0], mu=popt[1], sigma=popt[2]))
-        plt.title(dataname)
-        plt.ylim(-0.01*max_intensity, max_intensity)
-        plt.show()
+        # plt.plot(freq, df_intensities[dataname])
+        # plt.plot(freq, gauss(freq, A=popt[0], mu=popt[1], sigma=popt[2]))
+        # plt.title(dataname)
+        # plt.ylim(-0.01*max_intensity, max_intensity)
+        # plt.show()
 
     except:
         print(dataname+"failure")
@@ -180,11 +180,30 @@ df_fit.loc["t", df_intensities.columns[0]] = dict_nparam["t"]
 df_fit.loc["p", df_intensities.columns[0]] = dict_nparam["p"]
 df_fit.loc["rh", df_intensities.columns[0]] = dict_nparam["rh"]
 
-df_fit.to_excel("fit1_.xlsx")
+# TODO hozonbashohahennkousitahougayoikigasuru
+
+
+def Dialog_Folder(rootpath=r"C:", caption="choise"):
+    """
+    引数:初期ディレクトリ
+    戻り値:フォルダ(ディレクトリ)パス
+    """
+    # from PyQt5 import QtWidgets
+    # import sys
+    # # ディレクトリ選択ダイアログを表示
+    # app = QtWidgets.QApplication(sys.argv)
+    folderpath = QtWidgets.QFileDialog.getExistingDirectory(
+        parent=None, caption=caption, directory=rootpath)
+    return folderpath
+
+
+dir = Dialog_Folder()
+df_fit.to_excel(os.path.join(dir, "fit1_.xlsx"))
 
 df_sort_fit = pd.concat([df_sort, df_fit])
 
-df_fit.to_excel("fit1_sortfit.xlsx")
+df_sort_fit.to_excel(os.path.join(dir, "fit1_sort.xlsx"))
+
 
 # with pd.ExcelWriter(path_csvmatome, engine="openpyxl", mode="a") as writer:
 #     # engine="openpyxl"にしないと，mode = "a"が使えない
