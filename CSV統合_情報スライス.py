@@ -113,12 +113,13 @@ list_title = [regex_title.findall(filenames[i])[0][1:-1]
 
 regex_posi = re.compile("@"+".+"+"pls")
 list_posi_pls = [int(regex_posi.findall(filenames[i])[0][1:-3])
-             for i in range(filelen)]
+                 for i in range(filelen)]
 
 list_posi_m = [int(regex_posi.findall(filenames[i])[0][1:-3])*STAGE_RSN
-             for i in range(filelen)]
+               for i in range(filelen)]
 
-sortlist = [filenames, list_title, list_No, list_subNo, list_posi_pls, list_posi_m]
+sortlist = [filenames, list_title, list_No,
+            list_subNo, list_posi_pls, list_posi_m]
 
 df_sort = pd.DataFrame(
     sortlist, index=['NAME', "TITLE", "No", "subNo", "Posi_pls", "Posi_m"])
@@ -149,7 +150,7 @@ df_wholedata = df_wholedata.sort_index(axis="columns")
 # =============================================================================
 # １つのxlsxフォルダにdf_wholedata, dfsortframe _sortedを保存する．
 # =============================================================================
-XLSXpath = os.path.join(os.path.dirname(folderpath), "CSV_matome.xlsx")
+XLSXpath = os.path.join(os.path.dirname(folderpath), "CSV_matome_micro.xlsx")
 
 with pd.ExcelWriter(XLSXpath,) as writer:
     df_wholedata.to_excel(writer, sheet_name="wholedata",)
