@@ -180,10 +180,11 @@ df_fit.loc["t", df_intensities.columns[0]] = dict_nparam["t"]
 df_fit.loc["p", df_intensities.columns[0]] = dict_nparam["p"]
 df_fit.loc["rh", df_intensities.columns[0]] = dict_nparam["rh"]
 
-df_fit.to_excel("fit1.xlsx")
+df_fit.to_excel("fit1_.xlsx")
 
-# df_sort_fit = pd.concat([df_sort, df_fit])
+df_sort_fit = pd.concat([df_sort, df_fit])
 
+df_fit.to_excel("fit1_sortfit.xlsx")
 
 # with pd.ExcelWriter(path_csvmatome, engine="openpyxl", mode="a") as writer:
 #     # engine="openpyxl"にしないと，mode = "a"が使えない
