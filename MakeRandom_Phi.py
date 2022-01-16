@@ -68,7 +68,7 @@ freqs = df_phi.index
 df_params = pd.DataFrame(index=freqs,columns=["mu","sigma"])
 for freq in freqs:
     phi_of_freq = df_phi.loc[freq,:][99:]
-    
+
     mu, sigma = norm.fit(phi_of_freq)
     df_params.loc[freq, "mu"]=mu
     df_params.loc[freq, "sigma"]=sigma
@@ -99,16 +99,16 @@ for chapter in CHAPTER_sim:
             phi_random_singlefreq = np.random.normal(loc = df_params.loc[freq, "mu"],
                                         scale = df_params.loc[freq, "sigma"],size=10000)
             df_phi_sim.loc[freq,:] = phi_random_singlefreq
-            
+
         """各trialにおいて傾きa=dphi/df, OPD求める．ただし，dict_LF(Liner Fitting)の指定範囲以内に限るぢってぃんぐ"""
         ana_freq_start,ana_freq_end = dict_LF["ANA_FREQ_START"], dict_LF["ANA_FREQ_END"]
-        limit = (ana_freq_start<freqs)&(freqs<ana_freq_end)    
+        limit = (ana_freq_start<freqs)&(freqs<ana_freq_end)
         df_phi_sim_limit = df_phi_sim.loc[limit,:] # df_phi_simから，dict_LFの範囲のみ間引いたpd
 
         df_LFresult = pd.DataFrame(index=["a","b", "OPD"], columns=trials_sim)
 
         for trial in trials_sim:
-            a, b = np.polyfit(df_phi_sim_limit.index.tolist(), 
+            a, b = np.polyfit(df_phi_sim_limit.index.tolist(),
                             df_phi_sim_limit.loc[:, trial].tolist(), 1)
             OPD = c/(2*np.pi)*a
             df_LFresult.loc["a",trial]=a
