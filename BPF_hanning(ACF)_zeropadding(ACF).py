@@ -275,7 +275,7 @@ class AbsoluteDistance():
 
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
-        self.OPD = 299792458/(2*np.pi)*self.a
+        self.OPD = 299792458/(2)*self.a
 
 # %%
 # =============================================================================
