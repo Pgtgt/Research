@@ -32,7 +32,7 @@ K = 1/(1+np.cos(THETA_RAD))/n_air
 STAGE_RSN = 0.1e-6  # m/pls ステージの分解能#TODO
 LIST_HYPERPARAMS = ( #TODO
 
-    dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.7928e12,ANA_FREQ_END=191.9765e12), 
+    dict(cutT=4e-12, cutwidth=20e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.7928e12,ANA_FREQ_END=191.9765e12), 
 
 
 )
@@ -249,7 +249,7 @@ class AbsoluteDistance():
 
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
-        self.path_diff = 299792458/(2*np.pi*n_air)*self.a
+        self.path_diff = 299792458/(2)*self.a
 
 
 path_csv = Dialog_File(caption="choise single CSV")
