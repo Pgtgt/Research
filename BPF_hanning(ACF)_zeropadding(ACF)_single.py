@@ -36,6 +36,18 @@ LIST_HYPERPARAMS = ( #TODO
 
 
 )
+LIST_HYPERPARAMS = (
+    # @ exp13,pad4
+    #     BPF_method.delta_T
+    # Out[26]: 8.333263889468021e-13
+
+
+    # dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.438e12,ANA_FREQ_END=191.78e12),  for 10
+    # dict(cutT=13e-12, cutwidth=40e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.6e12,ANA_FREQ_END=191.807e12),
+    dict(cutT=13e-12, cutwidth=30e-12, expnum=13, PAD_EXP=2,
+         ANA_FREQ_START=191.632e12, ANA_FREQ_END=191.883e12),
+
+)
 
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
@@ -105,8 +117,8 @@ class AbsoluteDistance():
             freq ([float]): [signal]
             FF ([complex): [signal]
             FF_abs_amp ([float]): |FF|
-            
-        """        
+
+        """
         N = len(x)
         FF = np.fft.fft(y)
         dx = np.abs((x[-1]-x[0])/(N-1))
@@ -124,7 +136,7 @@ class AbsoluteDistance():
     def zero_padding(self, data, len_pad):
         """[zero paddingの結果と，補正係数acfを出力]
         本サイトの補正係数，おそらく本原理においては不要．算出だけした．
-        https://watlab-blog.com/2020/11/16/zero-padding-fft/ 
+        https://watlab-blog.com/2020/11/16/zero-padding-fft/
         Args:
             data ([float array]): [description]
             len_pad ([int]): [description]
@@ -132,8 +144,8 @@ class AbsoluteDistance():
         Returns:
             data_pad [float array]: [description]
             acf[float]: [description]
-            
-        """        
+
+        """
 
         pad = np.zeros(len_pad-len(data))
         data_pad = np.concatenate([data, pad])
@@ -159,10 +171,10 @@ class AbsoluteDistance():
 
         return wrap
 
-    def path_difference(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
+    def get_OPD(self, F_unequal, I_unequal, cutT=10e-12, cutwidth=1e-12, expnum=16, pad_exp=3, ana_freq_start = 191.65e12, ana_freq_end=191.75e12):
         """
         filepathから結果を分析．上の関数軍はこの関数のためのもの
-        結果が欲しいときは'self.path_diff'とかで呼び出す
+        結果が欲しいときは'self.OPD'とかで呼び出す
 
         C_1 + C_2*cos(phi) =>C_2/2 *exp(j*phi) => phi = a *F +b =>a
         Args:
@@ -183,7 +195,7 @@ class AbsoluteDistance():
         このサイトに従い，補正係数acf_han ももとめた
         本サイトに従い補正係数も設けたが，おそらく本原理においては不要
         """
-        
+
         hanning_win = np.hanning(self.SampNum_inter)
         # FFT後の数値に掛ければOKの補正係数
         acf_han = 1/(sum(hanning_win)/self.SampNum_inter)
@@ -193,8 +205,8 @@ class AbsoluteDistance():
         self.len_pad = self.SampNum_inter*pow(2, pad_exp)
         self.I_han_pad, self.acf_pad=self.zero_padding(self.I_han, self.len_pad)
         self.F_pad = np.linspace(
-            self.F_inter[0], 
-            self.F_inter[0]+(self.len_pad)*self.dF, 
+            self.F_inter[0],
+            self.F_inter[0]+(self.len_pad)*self.dF,
             self.len_pad+1)[:-1]
         """FFT:  I(f) C_1 + C_2*cos(phi(f) ) ====>   FFt(T)=C_1 + C_2/2 exp(j*phi(T) ) + C_2/2 exp(-j*phi(T))"""
         self.T, self.FFt, self.FFt_abs_amp = self.FFT(
@@ -249,8 +261,7 @@ class AbsoluteDistance():
 
         # https://biotech-lab.org/articles/4907 R2値
         self.R2 = metrics.r2_score(self.phi_cut, self.a * self.F_pad_cut + self.b)
-        self.path_diff = 299792458/(2)*self.a
-
+        self.OPD = 299792458/(2*np.pi)*self.a
 
 path_csv = Dialog_File(caption="choise single CSV")
 
@@ -258,7 +269,7 @@ BPF = AbsoluteDistance()
 F_uneq, I_uneq = BPF.OSAcsvfre_In(path_csv)
 
 dict_Param =LIST_HYPERPARAMS[0]
-BPF.path_difference(F_unequal=F_uneq,
+BPF.get_OPD(F_unequal=F_uneq,
                            I_unequal=I_uneq,
                            cutT=dict_Param["cutT"],
                            cutwidth=dict_Param["cutwidth"],
