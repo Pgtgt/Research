@@ -29,7 +29,7 @@ THETA_RAD = 1.214548722 #原理検証の時
 
 K = 1/(1+np.cos(THETA_RAD))/n_air
 
-STAGE_RSN = 0.1e-6  # m/pls ステージの分解能#TODO
+STAGE_RSN = 0.1e-6  # m/pls ステージの分解能#TODO 
 LIST_HYPERPARAMS = ( #TODO
 
     dict(cutT=4e-12, cutwidth=20e-12, expnum=13, PAD_EXP=2,ANA_FREQ_START=191.7928e12,ANA_FREQ_END=191.9765e12), 
@@ -286,7 +286,6 @@ padded=pd.DataFrame() #paddingされた後のデータ数2^expnum * 2^padexpの�
 cut =pd.DataFrame() # 線形近似のためにカット荒れた後のデータを扱う．
 # %%
 intered["F_inter"], intered["I_inter"],intered["I_han"]=BPF.F_inter,BPF.I_inter,BPF.I_han
-# TODO
 padded["F_pad"],padded["I_han_pad"]=BPF.F_pad,BPF.I_han_pad
 padded["T"],padded["FFt"],padded["FFt_re"],padded["FFt_im"],padded["FFt_abs_amp"]=BPF.T,BPF.FFt,BPF.FFt.real,BPF.FFt.imag,BPF.FFt_abs_amp
 padded["F3"],padded["F3_re"],padded["F3_im"],padded["F3_abs_amp"]=BPF.F3,BPF.F3.real,BPF.F3.imag,BPF.F3_abs_amp
