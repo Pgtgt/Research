@@ -47,7 +47,7 @@ c = 299792458
 # * 強度:df_intensities["ファイル名"]
 # * frequency:freq
 # **************************
-app = QtWidgets.QApplication(sys.argv)
+
 
 def Dialog_File(rootpath=r"C:", caption="choise"):
     """
@@ -60,14 +60,18 @@ def Dialog_File(rootpath=r"C:", caption="choise"):
     Returns:
         folderpath (str): folder path.
     """
-
+    app = QtWidgets.QApplication(sys.argv)
     # ディレクトリ選択ダイアログを表示-
     filepath = QtWidgets.QFileDialog.getOpenFileName(
         parent=None, caption=caption, directory=rootpath)
-
+    del app
     return filepath[0]
 
-
+"""
+STEP1 matomeファイルを読み込む．
+＊スペアナの仕様上 CSVおよびmatomexlsxは縦軸:mW,横軸:THzだが，
+本コードにてデータを読み込む際は縦軸:W,横軸:Hzに直す
+"""
 path_csvmatome = Dialog_File(caption="choose matome.xlxs")
 df_wholedata = pd.read_excel(
     path_csvmatome, sheet_name="wholedata", header=0, index_col=0)
@@ -86,6 +90,12 @@ freq = df_wholedata.loc["[TRACE DATA]":].iloc[1:].astype(float).index * 1e12
 
 # gfdsg
 # index=["k","A", "mu:f_center", "theta_rad", "sigma","r2", "n_air", "d(m/groove)"]
+
+"""
+STEP2 各スペクトルをガウシアンフィッティング等の計算
+値をdataframeへ格納
+また，信頼区間も求める
+"""
 
 df_fit = pd.DataFrame(index=["A", "mu:f_center", "sigma","trust","f_center","theta_rad","theta_deg","k","d(m/groove)","n_air","wave","t","p","rh"],
                       columns=df_intensities.columns)
@@ -106,7 +116,6 @@ def gauss(x, A=1, mu=0, sigma=1):
     """    
     y=A * np.exp(-(x - mu)**2 / (2*sigma**2))
     return y
-
 
 
 max_intensity = df_intensities.max().max()
@@ -180,13 +189,17 @@ df_fit.loc["rh", df_intensities.columns[0]] = dict_nparam["rh"]
 
 df_sort_fit = pd.concat([df_sort, df_fit])
 
+"""
+STEP3 結果保存
+結果をmatome.xlsxに，別シートに追記．
+"""
 
 with pd.ExcelWriter(path_csvmatome, engine="openpyxl", mode="a") as writer:
     # engine="openpyxl"にしないと，mode = "a"が使えない
     # https://stackoverflow.com/questions/54863238/pandas-excelwriter-valueerror-append-mode-is-not-supported-with-xlsxwriter
     df_sort_fit.to_excel(writer, sheet_name="sort_fit",)
 
-del app
+
 # col = ["s1","s2","s3","s4","s5",]
 # index =[1,2,3,4,5,6,7,8]
 # df = pd.DataFrame(index = index, columns = col)
